@@ -1,0 +1,796 @@
+<layout-row id="RowLayout1" class="myCustomBackground_CSK_Module_MultiModbusTCPServer">
+    <layout-column id="ColumnLayout7" class="myCustomFrameNoColor_CSK_Module_MultiModbusTCPServer"
+        style="align-items: stretch">
+        <layout-row id="RowLayout5" class="myCustomSpacerVert20_CSK_Module_MultiModbusTCPServer">
+        </layout-row>
+        <layout-row id="RowLayout19">
+            <layout-column id="ColumnLayout26" style="align-items: stretch">
+                <layout-row id="RowLayout01" style="align-items: baseline">
+                    <h1 id="Heading_Title" class="myCustomLabel_CSK_Module_MultiModbusTCPServer">
+                        ModbusTCPServer
+                    </h1>
+                    <davinci-value-display id="VD_Version">
+                        <crown-on property="value" crown-event="CSK_MultiModbusTCPServer/OnNewStatusModuleVersion">
+                        </crown-on>
+                    </davinci-value-display>
+                </layout-row>
+            </layout-column>
+        </layout-row>
+        <stacked-view id="SV_FeatureSupport">
+            <stacked-pane id="SP_Supported" value="true">
+                <stacked-view id="SV_Login">
+                    <stacked-pane id="SP_LoginOK" value="true">
+                        <layout-row id="RowLayout6">
+                            <layout-column id="ColumnLayout1" style="align-items: stretch">
+                                <layout-row id="RowLayout20"
+                                    class="myCustomMarginFirstRow_CSK_Module_MultiModbusTCPServer">
+                                    <layout-column id="ColumnLayout8"
+                                        class="myCustomMarginInline1Rem_CSK_Module_MultiModbusTCPServer"
+                                        style="align-items: stretch">
+                                        <layout-row id="RowLayout4">
+                                            <layout-column id="ColumnLayout2" style="align-items: stretch">
+                                            </layout-column>
+                                            <layout-column id="ColumnLayout6" style="align-items: stretch">
+                                                <layout-row id="RowLayout112"
+                                                    style="flex-grow: 0; flex-shrink: 0; align-items: center">
+                                                    <layout-column id="ColumnLayout223" style="align-items: stretch">
+                                                        <davinci-value-display id="VD_SelectedInstance"
+                                                            value="Instance">
+                                                        </davinci-value-display>
+                                                    </layout-column>
+                                                    <layout-column id="ColumnLayout56" style="align-items: stretch">
+                                                        <davinci-drop-down id="DD_SelectInstance">
+                                                            <crown-edpws-binding property="data"
+                                                                name="CSK_MultiModbusTCPServer/OnNewInstanceList"
+                                                                update-on-resume converter="convertToList">
+                                                            </crown-edpws-binding>
+                                                            <crown-edpws-binding property="value"
+                                                                name="CSK_MultiModbusTCPServer/OnNewSelectedInstance"
+                                                                update-on-resume
+                                                                converter="function(value) {return value.toString();}">
+                                                            </crown-edpws-binding>
+                                                            <crown-binding event="change"
+                                                                name="CSK_MultiModbusTCPServer/setSelectedInstance"
+                                                                path="param/args/instance" auto-commit
+                                                                converter="function(value) {return Number(value);}">
+                                                            </crown-binding>
+                                                        </davinci-drop-down>
+                                                    </layout-column>
+                                                    <layout-column id="ColumnLayout47" style="align-items: stretch">
+                                                        <layout-row id="RowLayout65"
+                                                            class="myCustomMarginTop7PX_CSK_Module_MultiModbusTCPServer"
+                                                            style="align-items: center; justify-content: center">
+                                                            <davinci-button id="B_AddInstance"
+                                                                class="myCustomButton_CSK_Module_MultiModbusTCPServer"
+                                                                type="outline" title="Add instance">
+                                                                <davinci-icon icon="content/add"></davinci-icon>
+                                                                <span></span>
+                                                                <crown-binding event="submit"
+                                                                    name="CSK_MultiModbusTCPServer/addInstance"
+                                                                    auto-commit>
+                                                                </crown-binding>
+                                                            </davinci-button>
+                                                            <davinci-button id="B_ResetInstances"
+                                                                class="myCustomButton_CSK_Module_MultiModbusTCPServer"
+                                                                type="outline"
+                                                                title="Reset instances to one single instance. New setup needs to be saved and restart app to clear old threads.">
+                                                                <davinci-icon icon="action/delete"></davinci-icon>
+                                                                <span></span>
+                                                                <crown-binding event="submit"
+                                                                    name="CSK_MultiModbusTCPServer/resetInstances"
+                                                                    auto-commit>
+                                                                </crown-binding>
+                                                            </davinci-button>
+                                                        </layout-row>
+                                                    </layout-column>
+                                                </layout-row>
+                                            </layout-column>
+                                        </layout-row>
+                                    </layout-column>
+                                    <layout-column id="ColumnLayout28"
+                                        class="myCustomBorderLeft_CSK_Module_MultiModbusTCPServer"
+                                        style="align-items: stretch">
+                                        <layout-row id="RowLayout46" style="align-items: baseline">
+                                            <layout-column id="ColumnLayout81" style="align-items: stretch">
+                                                <layout-row id="RowLayout24" style="align-items: center">
+                                                    <layout-column id="ColumnLayout57" style="align-items: stretch">
+                                                        <davinci-value-display id="VD_PersistentData"
+                                                            value="Persistent Data">
+                                                        </davinci-value-display>
+                                                    </layout-column>
+                                                    <layout-column id="ColumnLayout73"
+                                                        style="align-items: stretch; flex-grow: 2">
+                                                        <davinci-text-field id="TF_ParameterName" type="text"
+                                                            title="Name of the parameters within the CSK_PersistentData module to be uses for this module.">
+                                                            <crown-edpws-binding property="value"
+                                                                name="CSK_MultiModbusTCPServer/OnNewParameterName"
+                                                                update-on-resume>
+                                                            </crown-edpws-binding>
+                                                            <crown-binding event="change"
+                                                                name="CSK_MultiModbusTCPServer/setParameterName"
+                                                                path="param/args/name" auto-commit>
+                                                            </crown-binding>
+                                                            <crown-edpws-binding property="disabled"
+                                                                name="CSK_MultiModbusTCPServer/OnPersistentDataModuleAvailable"
+                                                                update-on-resume
+                                                                converter="function(value) {return !value;}">
+                                                            </crown-edpws-binding>
+                                                        </davinci-text-field>
+                                                    </layout-column>
+                                                    <layout-column id="Column_PersistentDatax"
+                                                        style="align-items: stretch">
+                                                        <layout-row id="RowLayout55">
+                                                            <layout-column id="ColumnLayout76"
+                                                                style="align-items: stretch">
+                                                                <layout-row id="RowLayout34"
+                                                                    class="myCustomMarginTop7PX_CSK_Module_MultiModbusTCPServer"
+                                                                    style="justify-content: center; align-items: center">
+                                                                    <davinci-button id="B_LoadConfig"
+                                                                        class="myCustomButton_CSK_Module_MultiModbusTCPServer"
+                                                                        type="outline"
+                                                                        title="Load configured parameters from CSK_PersistentData module.">
+                                                                        <davinci-icon icon="action/history">
+                                                                        </davinci-icon>
+                                                                        <span></span>
+                                                                        <crown-binding event="submit"
+                                                                            name="CSK_MultiModbusTCPServer/loadParameters"
+                                                                            auto-commit>
+                                                                        </crown-binding>
+                                                                        <crown-edpws-binding property="disabled"
+                                                                            name="CSK_MultiModbusTCPServer/OnPersistentDataModuleAvailable"
+                                                                            update-on-resume
+                                                                            converter="function(value) {return !value;}">
+                                                                        </crown-edpws-binding>
+                                                                    </davinci-button>
+                                                                    <davinci-button id="B_SaveConfig"
+                                                                        class="myCustomButton_CSK_Module_MultiModbusTCPServer"
+                                                                        type="outline"
+                                                                        title="Save current configured parameters of this module within CSK_PersistentData module.">
+                                                                        <davinci-icon icon="content/save">
+                                                                        </davinci-icon>
+                                                                        <span></span>
+                                                                        <crown-binding event="submit"
+                                                                            name="CSK_MultiModbusTCPServer/sendParameters"
+                                                                            auto-commit>
+                                                                        </crown-binding>
+                                                                        <crown-edpws-binding property="disabled"
+                                                                            name="CSK_MultiModbusTCPServer/OnPersistentDataModuleAvailable"
+                                                                            update-on-resume
+                                                                            converter="function(value) {return !value;}">
+                                                                        </crown-edpws-binding>
+                                                                    </davinci-button>
+                                                                </layout-row>
+                                                            </layout-column>
+                                                        </layout-row>
+                                                    </layout-column>
+                                                </layout-row>
+                                                <layout-row id="RowLayout57" style="align-items: center">
+                                                    <layout-column id="ColumnLayout511" style="align-items: stretch">
+                                                        <davinci-collapse id="Collapse_PersistentData"
+                                                            class="myCustomPersistentDataMargin_CSK_Module_MultiModbusTCPServer"
+                                                            collapsed-title="..." expanded-title="...">
+                                                            <layout-row id="RowLayout45"
+                                                                class="myCustomPersistentDataMarginBack_CSK_Module_MultiModbusTCPServer"
+                                                                style="align-items: center">
+                                                                <layout-column id="ColumnLayout6x"
+                                                                    style="align-items: stretch">
+                                                                </layout-column>
+                                                                <layout-column id="ColumnLayout72"
+                                                                    style="align-items: stretch; flex-grow: 2">
+                                                                    <layout-row id="RowLayout13">
+                                                                        <layout-column id="ColumnLayout11"
+                                                                            style="align-items: stretch">
+                                                                            <layout-row id="RowLayout2x"
+                                                                                style="align-items: center">
+                                                                                <davinci-value-display
+                                                                                    id="VD_LoadConfig"
+                                                                                    value="Load on reboot:"
+                                                                                    title="Load configured parameters from CSK_PersistentData on app start.">
+                                                                                </davinci-value-display>
+                                                                                <davinci-checkbox id="CB_LoadConfig"
+                                                                                    title="Load configured parameters from CSK_PersistentData on app start.">
+                                                                                    <span></span>
+                                                                                    <crown-edpws-binding
+                                                                                        property="checked"
+                                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusLoadParameterOnReboot"
+                                                                                        update-on-resume>
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-edpws-binding
+                                                                                        property="disabled"
+                                                                                        name="CSK_MultiModbusTCPServer/OnPersistentDataModuleAvailable"
+                                                                                        update-on-resume
+                                                                                        converter="function(value) {return !value;}">
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-binding event="change"
+                                                                                        name="CSK_MultiModbusTCPServer/setLoadOnReboot"
+                                                                                        path="param/args/status"
+                                                                                        auto-commit>
+                                                                                    </crown-binding>
+                                                                                </davinci-checkbox>
+                                                                            </layout-row>
+                                                                        </layout-column>
+                                                                        <layout-column id="ColumnLayout77"
+                                                                            style="align-items: stretch">
+                                                                        </layout-column>
+                                                                    </layout-row>
+                                                                </layout-column>
+                                                                <layout-column id="ColumnLayout79"
+                                                                    style="align-items: stretch">
+                                                                </layout-column>
+                                                            </layout-row>
+                                                        </davinci-collapse>
+                                                    </layout-column>
+                                                </layout-row>
+                                            </layout-column>
+                                        </layout-row>
+                                    </layout-column>
+                                </layout-row>
+                                <layout-row id="RowLayout60"
+                                    class="myCustomSpacerVert10_CSK_Module_MultiModbusTCPServer"
+                                    style="flex-grow: 0; flex-shrink: 0">
+                                </layout-row>
+                                <layout-row id="RowLayout47"
+                                    class="myCustomBorderBottom_CSK_Module_MultiModbusTCPServer"
+                                    style="flex-grow: 0; flex-shrink: 0">
+                                </layout-row>
+                                <layout-row id="RowLayout61"
+                                    class="myCustomSpacerVert20_CSK_Module_MultiModbusTCPServer"
+                                    style="flex-grow: 0; flex-shrink: 0">
+                                </layout-row>
+                                <layout-row id="RowLayout2">
+                                    <layout-column id="ColumnLayout3"
+                                        class="myCustomMarginInline1Rem_CSK_Module_MultiModbusTCPServer"
+                                        style="align-items: stretch">
+                                        <davinci-text-area id="TA_Log" label="Log" style="height: 500px">
+                                            <crown-on property="value" crown-event="CSK_MultiModbusTCPServer/OnNewLog">
+                                            </crown-on>
+                                        </davinci-text-area>
+                                    </layout-column>
+                                    <layout-column id="ColumnLayout4"
+                                        class="myCustomBorderLeft_CSK_Module_MultiModbusTCPServer"
+                                        style="align-items: stretch">
+                                        <davinci-tabs id="Tabs_Setup_Events" type="modern">
+                                            <davinci-tab id="Tab_Setup" icon="action/settings">
+                                                <layout-row id="RowLayout3">
+                                                    <layout-column id="ColumnLayout5"
+                                                        class="myCustomFrame_CSK_Module_MultiModbusTCPServer"
+                                                        style="align-items: stretch">
+                                                        <davinci-value-display id="VD_Configuration"
+                                                            class="myCustomFrameLabel_CSK_Module_MultiModbusTCPServer"
+                                                            label="Configuration" style="align-self: flex-start">
+                                                        </davinci-value-display>
+                                                        <layout-row id="RowLayout7" style="align-items: center">
+                                                            <layout-column id="ColumnLayout9"
+                                                                style="align-items: stretch">
+                                                                <davinci-value-display id="VD_Activate"
+                                                                    value="Activate">
+                                                                </davinci-value-display>
+                                                            </layout-column>
+                                                            <layout-column id="ColumnLayout10"
+                                                                style="align-items: flex-end">
+                                                                <davinci-toggle-switch id="TS_Activate">
+                                                                    <crown-binding event="change"
+                                                                        name="CSK_MultiModbusTCPServer/setStatusOfServer"
+                                                                        path="param/args/status" auto-commit>
+                                                                    </crown-binding>
+                                                                    <crown-edpws-binding property="checked"
+                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusServerActive"
+                                                                        update-on-resume>
+                                                                    </crown-edpws-binding>
+                                                                </davinci-toggle-switch>
+                                                            </layout-column>
+                                                        </layout-row>
+                                                        <layout-row id="RowLayout8" style="align-items: center">
+                                                            <layout-column id="ColumnLayout12"
+                                                                style="align-items: stretch">
+                                                                <davinci-value-display id="VD_Interface"
+                                                                    value="Interface">
+                                                                </davinci-value-display>
+                                                            </layout-column>
+                                                            <layout-column id="ColumnLayout13"
+                                                                style="align-items: stretch">
+                                                                <davinci-drop-down id="DD_Interface">
+                                                                    <crown-edpws-binding property="disabled"
+                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusServerActive"
+                                                                        update-on-resume>
+                                                                    </crown-edpws-binding>
+                                                                    <crown-edpws-binding property="data"
+                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusInterfaceList"
+                                                                        update-on-resume converter="convertToList">
+                                                                    </crown-edpws-binding>
+                                                                    <crown-edpws-binding property="value"
+                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusSelectedInterface"
+                                                                        update-on-resume>
+                                                                    </crown-edpws-binding>
+                                                                    <crown-binding event="change"
+                                                                        name="CSK_MultiModbusTCPServer/setServerInterface"
+                                                                        path="param/args/interface" auto-commit>
+                                                                    </crown-binding>
+                                                                </davinci-drop-down>
+                                                            </layout-column>
+                                                        </layout-row>
+                                                        <layout-row id="RowLayout23"
+                                                            style="justify-content: space-between; align-items: center">
+                                                            <layout-column id="ColumnLayout23"
+                                                                style="align-items: stretch">
+                                                                <davinci-value-display id="VD_Port" value="Port"
+                                                                    title="Process images receiving from this event.">
+                                                                </davinci-value-display>
+                                                            </layout-column>
+                                                            <layout-column id="ColumnLayout14"
+                                                                style="align-items: stretch">
+                                                                <davinci-numeric-field id="NF_Port" type="outline"
+                                                                    min="0" max="99999" ticks="1" group-separator=","
+                                                                    decimal-separator="." format-pattern="0">
+                                                                    <crown-edpws-binding property="disabled"
+                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusServerActive"
+                                                                        update-on-resume>
+                                                                    </crown-edpws-binding>
+                                                                    <crown-edpws-binding property="value"
+                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusServerPort"
+                                                                        update-on-resume>
+                                                                    </crown-edpws-binding>
+                                                                    <crown-binding event="change"
+                                                                        name="CSK_MultiModbusTCPServer/setServerPort"
+                                                                        path="param/args/port" auto-commit>
+                                                                    </crown-binding>
+                                                                </davinci-numeric-field>
+                                                            </layout-column>
+                                                        </layout-row>
+                                                    </layout-column>
+                                                </layout-row>
+                                            </davinci-tab>
+                                            <davinci-tab id="Tab_Variables" icon="action/compare_arrows">
+                                                <layout-row id="RowLayout9">
+                                                    <layout-column id="ColumnLayout15"
+                                                        class="myCustomFrame_CSK_Module_MultiModbusTCPServer"
+                                                        style="align-items: stretch">
+                                                        <davinci-value-display id="VD_Variables"
+                                                            class="myCustomFrameLabel_CSK_Module_MultiModbusTCPServer"
+                                                            value="" label="Variables" style="align-self: flex-start">
+                                                        </davinci-value-display>
+                                                        <davinci-tabs id="Tabs_Input_Holding" type="modern">
+                                                            <davinci-tab id="Tab_Input" label="Input variables">
+                                                                <layout-row id="RowLayout15">
+                                                                    <layout-column id="ColumnLayout29"
+                                                                        style="align-items: stretch">
+                                                                        <layout-row id="RowLayout10">
+                                                                            <layout-column id="ColumnLayout16"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-value-display id="VD_VarName"
+                                                                                    value="INPUT variable Name">
+                                                                                </davinci-value-display>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout17"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-value-display id="VD_Size"
+                                                                                    value="Byte Size">
+                                                                                </davinci-value-display>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout19"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-value-display
+                                                                                    id="VD_Input_RegisteredEvent"
+                                                                                    value="Registered event">
+                                                                                </davinci-value-display>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout37"
+                                                                                style="align-items: stretch">
+                                                                            </layout-column>
+                                                                        </layout-row>
+                                                                        <layout-row id="RowLayout12">
+                                                                            <layout-column id="ColumnLayout21"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-text-field
+                                                                                    id="TF_VarName_Input" type="text">
+                                                                                    <crown-edpws-binding
+                                                                                        property="value"
+                                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusTempVarInputName"
+                                                                                        update-on-resume>
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-binding event="change"
+                                                                                        name="CSK_MultiModbusTCPServer/setInputVarName"
+                                                                                        path="param/args/name"
+                                                                                        auto-commit>
+                                                                                    </crown-binding>
+                                                                                </davinci-text-field>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout22"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-numeric-field
+                                                                                    id="NF_Size_Input" type="outline"
+                                                                                    min="0" max="1024" ticks="1"
+                                                                                    group-separator=","
+                                                                                    decimal-separator="."
+                                                                                    format-pattern="0">
+                                                                                    <crown-edpws-binding
+                                                                                        property="value"
+                                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusTempVarInputSize"
+                                                                                        update-on-resume>
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-binding event="change"
+                                                                                        name="CSK_MultiModbusTCPServer/setInputVarSize"
+                                                                                        path="param/args/size"
+                                                                                        auto-commit>
+                                                                                    </crown-binding>
+                                                                                </davinci-numeric-field>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout39"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-text-field
+                                                                                    id="TF_Input_RegisteredEvent"
+                                                                                    type="text">
+                                                                                    <crown-edpws-binding
+                                                                                        property="value"
+                                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusTempVarInputRegisteredEvent"
+                                                                                        update-on-resume>
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-binding event="change"
+                                                                                        name="CSK_MultiModbusTCPServer/setInputVarRegisteredEvent"
+                                                                                        path="param/args/event"
+                                                                                        auto-commit>
+                                                                                    </crown-binding>
+                                                                                </davinci-text-field>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout27"
+                                                                                style="align-items: stretch">
+                                                                                <layout-row id="RowLayout25">
+                                                                                    <layout-column id="ColumnLayout40"
+                                                                                        style="align-items: center">
+                                                                                        <davinci-button
+                                                                                            id="Button_AddVariableInput"
+                                                                                            class="myCustomButton_CSK_Module_MultiModbusTCPServer"
+                                                                                            type="outline"
+                                                                                            icon-position="append"
+                                                                                            title="Add INPUT variable">
+                                                                                            <davinci-icon
+                                                                                                icon="content/add">
+                                                                                            </davinci-icon>
+                                                                                            <span></span>
+                                                                                            <crown-binding
+                                                                                                event="submit"
+                                                                                                name="CSK_MultiModbusTCPServer/addInputVariableViaUI"
+                                                                                                auto-commit>
+                                                                                            </crown-binding>
+                                                                                        </davinci-button>
+                                                                                    </layout-column>
+                                                                                    <layout-column id="ColumnLayout41"
+                                                                                        style="align-items: center">
+                                                                                        <davinci-button
+                                                                                            id="Button_RemoveVariableInput"
+                                                                                            class="myCustomButton_CSK_Module_MultiModbusTCPServer"
+                                                                                            type="outline"
+                                                                                            icon-position="append"
+                                                                                            title="Remove INPUT variable">
+                                                                                            <davinci-icon
+                                                                                                icon="action/delete">
+                                                                                            </davinci-icon>
+                                                                                            <span></span>
+                                                                                            <crown-binding
+                                                                                                event="submit"
+                                                                                                name="CSK_MultiModbusTCPServer/removeInputVariableViaUI"
+                                                                                                auto-commit>
+                                                                                            </crown-binding>
+                                                                                        </davinci-button>
+                                                                                    </layout-column>
+                                                                                </layout-row>
+                                                                            </layout-column>
+                                                                        </layout-row>
+                                                                        <layout-row id="RowLayout11">
+                                                                            <layout-column id="ColumnLayout20"
+                                                                                style="align-items: stretch">
+                                                                                <curie-table id="DT_Variables_Input"
+                                                                                    selectable>
+                                                                                    <curie-table-column
+                                                                                        id="DTC_ID_Input" header="ID">
+                                                                                    </curie-table-column>
+                                                                                    <curie-table-column
+                                                                                        id="DTC_BytePosition_Input"
+                                                                                        header="Byte Position">
+                                                                                    </curie-table-column>
+                                                                                    <curie-table-column
+                                                                                        id="DTC_VarName_Input"
+                                                                                        header="Variable Name">
+                                                                                    </curie-table-column>
+                                                                                    <curie-table-column
+                                                                                        id="DTC_RegisteredEvent_Input"
+                                                                                        header="Registered Event">
+                                                                                    </curie-table-column>
+                                                                                    <curie-table-column
+                                                                                        id="DTC_CurrentValue_Input"
+                                                                                        header="Current value">
+                                                                                    </curie-table-column>
+                                                                                    <crown-edpws-binding property="data"
+                                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusListOfInputVariables"
+                                                                                        update-on-resume>
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-binding event="row-selected"
+                                                                                        name="CSK_MultiModbusTCPServer/setInputVarTableSelection"
+                                                                                        path="param/args/selection"
+                                                                                        auto-commit>
+                                                                                    </crown-binding>
+                                                                                </curie-table>
+                                                                            </layout-column>
+                                                                        </layout-row>
+                                                                        <layout-row id="RowLayout27"
+                                                                            style="align-items: center">
+                                                                            <layout-column id="ColumnLayout44"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-value-display
+                                                                                    id="VD_UpdateInputValue"
+                                                                                    value="Update value of selected variable">
+                                                                                </davinci-value-display>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout45"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-numeric-field
+                                                                                    id="NF_InputValueToSet"
+                                                                                    type="outline" min="0" max="65535"
+                                                                                    ticks="1" group-separator=","
+                                                                                    decimal-separator="."
+                                                                                    format-pattern="0"
+                                                                                    title="Value to set for selected variable (range 0 - 65535)">
+                                                                                    <crown-edpws-binding
+                                                                                        property="value"
+                                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusInputValueToSet"
+                                                                                        update-on-resume>
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-binding event="change"
+                                                                                        name="CSK_MultiModbusTCPServer/setInputValueToSetViaUI"
+                                                                                        path="param/args/value"
+                                                                                        auto-commit>
+                                                                                    </crown-binding>
+                                                                                </davinci-numeric-field>
+                                                                            </layout-column>
+                                                                        </layout-row>
+                                                                    </layout-column>
+                                                                </layout-row>
+                                                            </davinci-tab>
+                                                            <davinci-tab id="Tab_Holding" label="Holding variables">
+                                                                <layout-row id="RowLayout18">
+                                                                    <layout-column id="ColumnLayout30"
+                                                                        style="align-items: stretch">
+                                                                        <layout-row id="RowLayout21">
+                                                                            <layout-column id="ColumnLayout31"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-value-display
+                                                                                    id="VD_VarNameHolding"
+                                                                                    value="HOLDING variable Name">
+                                                                                </davinci-value-display>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout32"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-value-display
+                                                                                    id="VD_Size_Holding"
+                                                                                    value="Byte Size">
+                                                                                </davinci-value-display>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout34"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-value-display
+                                                                                    id="VD_Holding_RegisteredEvent"
+                                                                                    value="Registered event">
+                                                                                </davinci-value-display>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout24"
+                                                                                style="align-items: stretch">
+                                                                            </layout-column>
+                                                                        </layout-row>
+                                                                        <layout-row id="RowLayout16">
+                                                                            <layout-column id="ColumnLayout35"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-text-field
+                                                                                    id="TF_VarName_Holding" type="text">
+                                                                                    <crown-edpws-binding
+                                                                                        property="value"
+                                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusTempVarHoldingName"
+                                                                                        update-on-resume>
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-binding event="change"
+                                                                                        name="CSK_MultiModbusTCPServer/setHoldingVarName"
+                                                                                        path="param/args/name"
+                                                                                        auto-commit>
+                                                                                    </crown-binding>
+                                                                                </davinci-text-field>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout36"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-numeric-field
+                                                                                    id="NF_Size_Holding" type="outline"
+                                                                                    min="0" max="1024" ticks="1"
+                                                                                    group-separator=","
+                                                                                    decimal-separator="."
+                                                                                    format-pattern="0">
+                                                                                    <crown-edpws-binding
+                                                                                        property="value"
+                                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusTempVarHoldingSize"
+                                                                                        update-on-resume>
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-binding event="change"
+                                                                                        name="CSK_MultiModbusTCPServer/setHoldingVarSize"
+                                                                                        path="param/args/size"
+                                                                                        auto-commit>
+                                                                                    </crown-binding>
+                                                                                </davinci-numeric-field>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout33"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-text-field
+                                                                                    id="TF_Holding_RegisteredEvent"
+                                                                                    type="text">
+                                                                                    <crown-edpws-binding
+                                                                                        property="value"
+                                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusTempVarHoldingRegisteredEvent"
+                                                                                        update-on-resume>
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-binding event="change"
+                                                                                        name="CSK_MultiModbusTCPServer/setHoldingVarRegisteredEvent"
+                                                                                        path="param/args/event"
+                                                                                        auto-commit>
+                                                                                    </crown-binding>
+                                                                                </davinci-text-field>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout38"
+                                                                                style="align-items: stretch">
+                                                                                <layout-row id="RowLayout26">
+                                                                                    <layout-column id="ColumnLayout42"
+                                                                                        style="align-items: center">
+                                                                                        <davinci-button
+                                                                                            id="Button_AddHoldingVariable"
+                                                                                            class="myCustomButton_CSK_Module_MultiModbusTCPServer"
+                                                                                            type="outline"
+                                                                                            icon-position="append"
+                                                                                            title="Add HOLDING variable">
+                                                                                            <davinci-icon
+                                                                                                icon="content/add">
+                                                                                            </davinci-icon>
+                                                                                            <span></span>
+                                                                                            <crown-binding
+                                                                                                event="submit"
+                                                                                                name="CSK_MultiModbusTCPServer/addHoldingVariableViaUI"
+                                                                                                auto-commit>
+                                                                                            </crown-binding>
+                                                                                        </davinci-button>
+                                                                                    </layout-column>
+                                                                                    <layout-column id="ColumnLayout43"
+                                                                                        style="align-items: center">
+                                                                                        <davinci-button
+                                                                                            id="Button_RemoveHoldingVariable"
+                                                                                            class="myCustomButton_CSK_Module_MultiModbusTCPServer"
+                                                                                            type="outline"
+                                                                                            icon-position="append"
+                                                                                            title="Remove HOLDING variable">
+                                                                                            <davinci-icon
+                                                                                                icon="action/delete">
+                                                                                            </davinci-icon>
+                                                                                            <span></span>
+                                                                                            <crown-binding
+                                                                                                event="submit"
+                                                                                                name="CSK_MultiModbusTCPServer/removeHoldingVariableViaUI"
+                                                                                                auto-commit>
+                                                                                            </crown-binding>
+                                                                                        </davinci-button>
+                                                                                    </layout-column>
+                                                                                </layout-row>
+                                                                            </layout-column>
+                                                                        </layout-row>
+                                                                        <layout-row id="RowLayout22">
+                                                                            <layout-column id="ColumnLayout18"
+                                                                                style="align-items: stretch">
+                                                                                <curie-table id="DT_Variables_Holding"
+                                                                                    selectable>
+                                                                                    <curie-table-column
+                                                                                        id="DTC_ID_Holding" header="ID">
+                                                                                    </curie-table-column>
+                                                                                    <curie-table-column
+                                                                                        id="DTC_BytePosition_Holding"
+                                                                                        header="Byte Position">
+                                                                                    </curie-table-column>
+                                                                                    <curie-table-column
+                                                                                        id="DTC_VarName_Holding"
+                                                                                        header="Variable Name">
+                                                                                    </curie-table-column>
+                                                                                    <curie-table-column
+                                                                                        id="DTC_RegisteredEvent_Holding"
+                                                                                        header="Registered event">
+                                                                                    </curie-table-column>
+                                                                                    <curie-table-column
+                                                                                        id="DTC_CurrentValue_Holding"
+                                                                                        header="Current value">
+                                                                                    </curie-table-column>
+                                                                                    <crown-edpws-binding property="data"
+                                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusListOfHoldingVariables"
+                                                                                        update-on-resume>
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-binding event="row-selected"
+                                                                                        name="CSK_MultiModbusTCPServer/setHoldingVarTableSelection"
+                                                                                        path="param/args/selection"
+                                                                                        auto-commit>
+                                                                                    </crown-binding>
+                                                                                </curie-table>
+                                                                            </layout-column>
+                                                                        </layout-row>
+                                                                        <layout-row id="RowLayout29"
+                                                                            style="align-items: center">
+                                                                            <layout-column id="ColumnLayout46"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-value-display
+                                                                                    id="VD_UpdateHoldingValue"
+                                                                                    value="Update value of selected variable">
+                                                                                </davinci-value-display>
+                                                                            </layout-column>
+                                                                            <layout-column id="ColumnLayout48"
+                                                                                style="align-items: stretch">
+                                                                                <davinci-numeric-field
+                                                                                    id="NF_HoldingValueToSet"
+                                                                                    type="outline" min="0" max="65535"
+                                                                                    ticks="1" group-separator=","
+                                                                                    decimal-separator="."
+                                                                                    format-pattern="0"
+                                                                                    title="Value to set for selected variable (range 0 - 65535)">
+                                                                                    <crown-edpws-binding
+                                                                                        property="value"
+                                                                                        name="CSK_MultiModbusTCPServer/OnNewStatusHoldingValueToSet"
+                                                                                        update-on-resume>
+                                                                                    </crown-edpws-binding>
+                                                                                    <crown-binding event="change"
+                                                                                        name="CSK_MultiModbusTCPServer/setHoldingValueToSetViaUI"
+                                                                                        path="param/args/value"
+                                                                                        auto-commit>
+                                                                                    </crown-binding>
+                                                                                </davinci-numeric-field>
+                                                                            </layout-column>
+                                                                        </layout-row>
+                                                                    </layout-column>
+                                                                </layout-row>
+                                                            </davinci-tab>
+                                                        </davinci-tabs>
+                                                    </layout-column>
+                                                </layout-row>
+                                            </davinci-tab>
+                                        </davinci-tabs>
+                                    </layout-column>
+                                </layout-row>
+                                <layout-row id="RowLayout28"
+                                    class="myCustomSpacerVert10_CSK_Module_MultiModbusTCPServer">
+                                </layout-row>
+                            </layout-column>
+                        </layout-row>
+                    </stacked-pane>
+                    <stacked-pane id="SP_LoginNotOK" value="false">
+                        <davinci-callout id="Callout1" type="info">
+                            <span>
+								Please log in via CSK_UserManagement module (at least via user level "Operator")
+							</span>
+                        </davinci-callout>
+                    </stacked-pane>
+                    <crown-edpws-binding property="value" name="CSK_MultiModbusTCPServer/OnUserLevelOperatorActive"
+                        update-on-resume converter="function(value) {return value.toString();}">
+                    </crown-edpws-binding>
+                </stacked-view>
+            </stacked-pane>
+            <stacked-pane id="SP_NoSupport" value="false">
+                <layout-row id="RowLayout17">
+                    <layout-column id="ColumnLayout25">
+                        <davinci-callout id="Callout31" type="warning" style="width: 99%">
+                            <span>Module is not supported on this device...</span>
+                        </davinci-callout>
+                        <img id="UI_sample" src="assets/CSK_Module_MultiModbusTCPServer/UI_sample.png"
+							alt="UI sample">
+                    </layout-column>
+                </layout-row>
+            </stacked-pane>
+            <crown-edpws-binding property="value" name="CSK_MultiModbusTCPServer/OnNewStatusModuleIsActive"
+                update-on-resume converter="function(value) {return value.toString();}">
+            </crown-edpws-binding>
+        </stacked-view>
+        <stacked-view id="SV_PageCalled">
+            <crown-binding property="value" name="CSK_MultiModbusTCPServer/pageCalled" path="result/data/empty"
+                auto-update="0" update-on-resume>
+            </crown-binding>
+            <crown-edpws-binding property="value" name="CSK_MultiModbusTCPServer/OnNewStatusCSKStyle" update-on-resume
+                converter="changeStyle">
+            </crown-edpws-binding>
+        </stacked-view>
+    </layout-column>
+</layout-row>

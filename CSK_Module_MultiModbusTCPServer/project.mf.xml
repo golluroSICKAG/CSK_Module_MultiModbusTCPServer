@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<manifest>
+    <application name="CSK_Module_MultiModbusTCPServer">
+        <crown name="CSK_Module_MultiModbusTCPServer">
+            <desc>This is an automatically generated CROWN (description not necessary).</desc>
+        </crown>
+        <crown name="CSK_MultiModbusTCPServer">
+            <trait>released</trait>
+            <desc>Module to provide ModbusTCP server functionality for multiple instances. Other modules can access its features / settings. +
+This module provides a UI for all relevant features. +
+{empty} + 
+Typically the features of this module are used like this (check also main script of this module): +
+{empty} + 
+**1) Setup the ModbusTCP server configuration** +
+- Select instance via 'setSelectedInstance'. +
+- Set interface via 'setServerInterface'. +
+- Set port via 'setServerPort'. +
+- Connect to server via 'setStatusOfServer'. +
+{empty} + 
+**2) Setup variables** +
+It is possible to configure INPUT and HOLDING variables. Make use the 'addVariable' function. +
+For each variable it is possible to configure an event to register to and to set received values to the variable. +
+It is possible to set a value via 'setInputValueNUM' (replace NUM by its instance identifier). +
+If the value of a variable changed, it will be notified via the related event, like: OnNewVariableUpdateNUM_VAR +
+NUM and VAR will be replaced by the number of instance and name of the variable (e.g. "OnNewVariableUpdate1_VarA"). +
+{empty} + </desc>
+            <serves>
+                <event name="OnNewStatusLoadParameterOnReboot">
+                    <desc>Notify status if parameters should be loaded on app/device boot up.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnPersistentDataModuleAvailable">
+                    <desc>Notify status if features of CSK_PersistentData module are available.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewInstanceList">
+                    <desc>Event to provide list of created instances.</desc>
+                    <param desc="List of created instances." multiplicity="1" name="list" type="string"/>
+                </event>
+                <event name="OnNewProcessingParameter">
+                    <desc>Event to share processing parameters to the instances.</desc>
+                    <param desc="Number of the instance to receive the parameter." multiplicity="1" name="objectNo" type="int"/>
+                    <param desc="Name of the parameter." multiplicity="1" name="parameter" type="string"/>
+                    <param desc="Value of the parameter." multiplicity="?" name="value" type="auto"/>
+                    <param desc="Optional additiona value for the parameter." multiplicity="?" name="value2" type="auto"/>
+                    <param desc="Optional additiona value for the parameter." multiplicity="?" name="value3" type="auto"/>
+                    <param desc="Optional additiona value for the parameter." multiplicity="?" name="value4" type="auto"/>
+                </event>
+                <event name="OnNewSelectedInstance">
+                    <desc>Notify if new instance is selected.</desc>
+                    <param desc="Selected instance." multiplicity="1" name="selectedObject" type="int"/>
+                </event>
+                <event name="OnDataLoadedOnReboot">
+                    <desc>Event to call if module tried to load parameters and should be ready.</desc>
+                </event>
+                <event name="OnNewParameterName">
+                    <desc>Notify name of persistent data parameter.</desc>
+                    <param desc="Parameter name" multiplicity="1" name="name" type="string"/>
+                </event>
+                <event name="OnUserLevelOperatorActive">
+                    <desc>Status of Operator userlevel. Used internally in combination with the CSK_UserManagement module if available.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnUserLevelMaintenanceActive">
+                    <desc>Status of Maintenance userlevel. Used internally in combination with the CSK_UserManagement module if available.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnUserLevelServiceActive">
+                    <desc>Status of Service userlevel. Used internally in combination with the CSK_UserManagement module if available.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnUserLevelAdminActive">
+                    <desc>Status of Admin userlevel. Used internally in combination with the CSK_UserManagement module if available.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewValueUpdateNUM">
+                    <desc>Example of dynamically created event to sync paramters between instance threads and Controller part of module. +
+NUM will be replaced by the number of instance (e.g. "OnNewValueUpdate1"). +</desc>
+                    <param desc="Instance new value is coming from." multiplicity="1" name="instance" type="int"/>
+                    <param desc="Name of the paramter to update/sync." multiplicity="1" name="parameter" type="string"/>
+                    <param desc="Value to update." multiplicity="[?*]" name="value" type="auto"/>
+                    <param desc="Optionally if internal parameter should be used for internal objects." multiplicity="[?*]" name="valueB" type="int"/>
+                </event>
+                <event name="OnNewValueToForwardNUM">
+                    <desc>Example of dynamically created event to forward data from instance thread to Controller part of module, e.g. to forward values to UI. +
+NUM will be replaced by the number of instance (e.g. "OnNewValueToForward1"). +</desc>
+                    <param desc="Eventname to use to forward value." multiplicity="1" name="eventname" type="string"/>
+                    <param desc="Value to forward." multiplicity="1" name="value" type="auto"/>
+                </event>
+                <event name="OnNewStatusFlowConfigPriority">
+                    <desc>Notify if FlowConfig should have priority for FlowConfig relevant configurations.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewStatusCSKStyle">
+                    <desc>Notify UI style to use for CSK modules.</desc>
+                    <param desc="UI style" multiplicity="1" name="theme" type="string"/>
+                </event>
+                <event name="OnNewStatusModuleVersion">
+                    <desc>Notify version of module.</desc>
+                    <param desc="Version" multiplicity="1" name="version" type="string"/>
+                </event>
+                <event name="OnNewStatusModuleIsActive">
+                    <desc>Notify if module can be used on device.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewLog">
+                    <desc>Notify latest log messages (max. 200).</desc>
+                    <param desc="Logs" multiplicity="1" name="logs" type="string"/>
+                </event>
+                <event name="OnNewStatusListOfInputVariables">
+                    <desc>Notify list of INPUT variables.</desc>
+                    <param desc="List of INPUT variables." multiplicity="1" name="list" type="string"/>
+                </event>
+                <event name="OnNewStatusListOfHoldingVariables">
+                    <desc>Notify list of HOLDING variables.</desc>
+                    <param desc="List of HOLDING variables." multiplicity="1" name="list" type="string"/>
+                </event>
+                <event name="OnNewStatusTempVarInputName">
+                    <desc>Notify name to use for new INPUT variable.</desc>
+                    <param desc="Name of variable." multiplicity="1" name="name" type="string"/>
+                </event>
+                <event name="OnNewStatusTempVarHoldingName">
+                    <desc>Notify name to use for new HOLDING variable.</desc>
+                    <param desc="Name of variable." multiplicity="1" name="name" type="string"/>
+                </event>
+                <event name="OnNewStatusTempVarInputSize">
+                    <desc>Notify status of byte size to use for new input variable.</desc>
+                    <param desc="Size in bytes." multiplicity="1" name="size" type="int"/>
+                </event>
+                <event name="OnNewStatusTempVarHoldingSize">
+                    <desc>Notify status of byte size to use for new holding variable.</desc>
+                    <param desc="Size in bytes." multiplicity="1" name="size" type="int"/>
+                </event>
+                <event name="OnNewStatusTempVarInputRegisteredEvent">
+                    <desc>Notify status of event to register value of new input variable to.</desc>
+                    <param desc="Name of event," multiplicity="1" name="name" type="string"/>
+                </event>
+                <event name="OnNewStatusTempVarHoldingRegisteredEvent">
+                    <desc>Notify status of event to register value of new input variable to.</desc>
+                    <param desc="Name of event," multiplicity="1" name="name" type="string"/>
+                </event>
+                <event name="OnNewVariableUpdateNUM">
+                    <trait>released</trait>
+                    <desc>Example of dynamically created event to forward updates of Modbus variables. +
+NUM will be replaced by the number of instance (e.g. "OnNewVariableUpdate1"). +</desc>
+                    <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
+                    <param desc="Updated value." multiplicity="1" name="value" type="binary"/>
+                </event>
+                <event name="OnNewVariableUpdateNUM_VAR">
+                    <trait>released</trait>
+                    <desc>Example of dynamically created event to forward updates of Modbus variables. +
+NUM and VAR will be replaced by the number of instance and name of the variable (e.g. "OnNewVariableUpdate1_VarA"). +</desc>
+                    <param desc="Updated value." multiplicity="1" name="value" type="binary"/>
+                </event>
+                <event name="OnNewStatusServerActive">
+                    <desc>Notify if server is active.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewStatusInputValueToSet">
+                    <desc>Notfiy value to set for INPUT variable.</desc>
+                    <param desc="Value" multiplicity="1" name="value" type="int"/>
+                </event>
+                <event name="OnNewStatusHoldingValueToSet">
+                    <desc>Notify value to set for HOLDING variable.</desc>
+                    <param desc="Value" multiplicity="1" name="value" type="int"/>
+                </event>
+                <event name="OnNewStatusServerPort">
+                    <desc>Notify port of ModbusTCP server.</desc>
+                    <param desc="Port" multiplicity="1" name="port" type="int"/>
+                </event>
+                <event name="OnNewStatusInterfaceList">
+                    <desc>Notify list of available interfaces.</desc>
+                    <param desc="List of interfaces." multiplicity="1" name="list" type="string"/>
+                </event>
+                <event name="OnNewStatusSelectedInterface">
+                    <desc>Notify selected interface.</desc>
+                    <param desc="Interface" multiplicity="1" name="interface" type="string"/>
+                </event>
+                <function name="setParameterName">
+                    <desc>Function to set the name of the parameters if saved/loaded via the CSK_PersistentData module.</desc>
+                    <param desc="Name of the parameter" multiplicity="1" name="name" type="string"/>
+                </function>
+                <function name="setLoadOnReboot">
+                    <desc>Configure if this module should load its saved parameters at app/ device boot up.</desc>
+                    <param desc="Set status" multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="pageCalled">
+                    <desc>Function to register "OnResume" of the module UI (only as helper function).</desc>
+                    <return desc="Empty string (only needed to simplify binding)." multiplicity="1" name="empty" type="string"/>
+                </function>
+                <function name="setSelectedInstance">
+                    <desc>Select one of the multiple instances.</desc>
+                    <param desc="Instance to select." multiplicity="1" name="instance" type="int"/>
+                </function>
+                <function name="getInstancesAmount">
+                    <desc>Get the amount of created instances of this module.</desc>
+                    <return desc="Amount of created instances." multiplicity="1" name="amount" type="int"/>
+                </function>
+                <function name="setRegisterEvent">
+                    <desc>Configure event that this module should listen to. If this one is notified, it will be linked to internal processing function. +
+(Will be set to currently active instance, see "setSelectedObject")</desc>
+                    <param desc="(external) Event name to listen to." multiplicity="1" name="event" type="string"/>
+                </function>
+                <function name="addInstance">
+                    <desc>Function to add an additional instance.</desc>
+                </function>
+                <function name="resetInstances">
+                    <desc>Function to reset instances to one single instance. +
+IMPORTANT: As instances start their own threads, the module needs to be restarted if new instances are needed... (see AppEngine docu for "Script.startScript").</desc>
+                </function>
+                <function name="sendParameters">
+                    <desc>Send parameters to CSK_PersistentData module if possible to save them.</desc>
+                    <param desc="[Optional] Set to TRUE if the data should NOT be saved immediately after sending." multiplicity="?" name="noDataSave" type="bool"/>
+                </function>
+                <function name="setFlowConfigPriority">
+                    <desc>Function to configure if FlowConfig should have priority for FlowConfig relevant configuration.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="clearFlowConfigRelevantConfiguration">
+                    <desc>Function to clear FlowConfig relevant configurations.</desc>
+                </function>
+                <function name="getStatusModuleActive">
+                    <desc>Function to get status if module is active.</desc>
+                    <return desc="Status" multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="loadParameters">
+                    <desc>Load parameters for this module from the CSK_PersistentData module if possible and use them.</desc>
+                    <return desc="Success to load parameters." multiplicity="1" name="success" type="bool"/>
+                </function>
+                <function name="getParameters">
+                    <trait>released</trait>
+                    <desc>Function to get all parameters of the client in JSON format.</desc>
+                    <param desc="Number of instance to get parameters from." multiplicity="1" name="instanceNo" type="int"/>
+                    <return desc="JSON string with all parameters." multiplicity="1" name="jsonParameters" type="string"/>
+                </function>
+                <function name="resetModule">
+                    <desc>Function to reset main configuration of module.</desc>
+                </function>
+                <function name="setStatusOfServer">
+                    <desc>Function to set status of Modbus TCP/IP server.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="addVariable">
+                    <desc>Function to add a new variable to Modbus TCP/IP server.</desc>
+                    <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
+                    <param desc="Number of bytes." multiplicity="1" name="size" type="int"/>
+                    <param desc="Type of Modbus register to use" multiplicity="1" name="varType" type="string"/>
+                    <param desc="Name of event to register value." multiplicity="?" name="eventName" type="string"/>
+                </function>
+                <function name="addInputVariableViaUI">
+                    <desc>Function to add new input variable with preset configuration.</desc>
+                </function>
+                <function name="addHoldingVariableViaUI">
+                    <desc>Function to add new holding variable with preset configuration.</desc>
+                </function>
+                <function name="setInputVarName">
+                    <desc>Function to preset name of new input variable to create.</desc>
+                    <param desc="Name of new variable." multiplicity="1" name="name" type="string"/>
+                </function>
+                <function name="setHoldingVarName">
+                    <desc>Function to preset name of new holding variable to create.</desc>
+                    <param desc="Name of new variable." multiplicity="1" name="name" type="string"/>
+                </function>
+                <function name="setInputVarSize">
+                    <desc>Function to preset byte size of new input variable to create.</desc>
+                    <param desc="Size of variable (in Bytes)." multiplicity="1" name="size" type="int"/>
+                </function>
+                <function name="setInputVarRegisteredEvent">
+                    <desc>Function to set the event to register the value of the new input variable.</desc>
+                    <param desc="Name of event." multiplicity="1" name="event" type="string"/>
+                </function>
+                <function name="setHoldingVarRegisteredEvent">
+                    <desc>Function to set the event to register the value of the new holding variable.</desc>
+                    <param desc="Name of event." multiplicity="1" name="event" type="string"/>
+                </function>
+                <function name="setInputVarTableSelection">
+                    <desc>Function to set selection of INPUT variable table.</desc>
+                    <param desc="Selection" multiplicity="1" name="selection" type="string"/>
+                </function>
+                <function name="removeInputVariableViaUI">
+                    <desc>Function to remove preselected INPUT variable.</desc>
+                </function>
+                <function name="removeHoldingVariableViaUI">
+                    <desc>Function to remove preselected HOLDING variable.</desc>
+                </function>
+                <function name="removeHoldingVariable">
+                    <desc>Function to remove HOLDING variable.</desc>
+                    <param desc="Name of HOLDING variable to remove." multiplicity="1" name="varName" type="string"/>
+                </function>
+                <function name="removeInputVariable">
+                    <desc>Function to remove INPUT variable.</desc>
+                    <param desc="Name of INPUT variable to remove." multiplicity="1" name="varName" type="string"/>
+                </function>
+                <function name="setInputValueNUM">
+                    <desc>Function to update value of INPUT variable.
+Example of dynamically created function to set the value of an INPUT  variable. +
+NUM will be replaced by the number of instance (e.g. "setInputValue1"). +</desc>
+                    <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
+                    <param desc="Value" multiplicity="1" name="value" type="binary"/>
+                </function>
+                <function name="setHoldingValueNUM">
+                    <desc>Example of dynamically created function to set the value of a HOLDING variable. +
+NUM will be replaced by the number of instance (e.g. "setHoldingValue1"). +</desc>
+                    <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
+                    <param desc="Value" multiplicity="1" name="value" type="binary"/>
+                </function>
+                <function name="setInputValueToSetViaUI">
+                    <desc>Function to preset a value to set for a selected INPUT variable.</desc>
+                    <param desc="Value" multiplicity="1" name="value" type="int"/>
+                </function>
+                <function name="setHoldingValueToSetViaUI">
+                    <desc>Function to preset a value to set for a selected HOLDING variable.</desc>
+                    <param desc="Value" multiplicity="1" name="value" type="int"/>
+                </function>
+                <function name="setInputValueViaUI">
+                    <desc>Function to set preconfigured value to selected INPUT variable.</desc>
+                </function>
+                <function name="setHoldingValueViaUI">
+                    <desc>Function to set preconfigured value to selected HOLDING variable.</desc>
+                </function>
+                <function name="setServerPort">
+                    <desc>Function to set port of ModbusTCP server.</desc>
+                    <param desc="Port" multiplicity="1" name="port" type="int"/>
+                </function>
+                <function name="setServerInterface">
+                    <desc>Function to set interface of ModbusTCP server.</desc>
+                    <param desc="Interface" multiplicity="1" name="interface" type="string"/>
+                </function>
+                <function name="setHoldingVarSize">
+                    <desc>Function to preset byte size of new holding variable to create.</desc>
+                    <param desc="Size of variable to create (in Bytes)." multiplicity="1" name="size" type="int"/>
+                </function>
+                <function name="setHoldingVarTableSelection">
+                    <desc>Function to set selection of HOLDING variable table.</desc>
+                    <param desc="Selection" multiplicity="1" name="selection" type="string"/>
+                </function>
+                <function name="setRegisteredEventOfVariable">
+                    <desc>Function to set registered event of specific variable.</desc>
+                    <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
+                    <param desc="Name of event to register to." multiplicity="1" name="eventName" type="string"/>
+                </function>
+            </serves>
+        </crown>
+        <crown name="MultiModbusTCPServer_FC">
+            <trait>released</trait>
+            <desc>Crown to provide CSK_FlowConfig relevant features.</desc>
+            <serves/>
+            <crown name="SetValue">
+                <desc>Set value of ModbusTCP variable.</desc>
+                <serves>
+                    <function name="create">
+                        <desc>Internally used CSK_FlowConfig create function.</desc>
+                        <param constraint="1-99" desc="Numeric identifier of processing instance." multiplicity="1" name="Instance" type="int"/>
+                        <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
+                        <return desc="Handle to internally used FlowConfig instance." multiplicity="1" name="handle" type="handle"/>
+                    </function>
+                    <function name="setValue">
+                        <include>data-flow</include>
+                        <desc>Set value of ModbusTCP variable.</desc>
+                        <param desc="Handle to internally used FlowConfig instance." multiplicity="1" name="handle" type="handle"/>
+                        <param desc="Source to forward data via ModbusTCP variable.&#10;&#10;Parameter:&#10;1: Data (BINARY)&#10;" multiplicity="1" name="source" type="string"/>
+                    </function>
+                </serves>
+            </crown>
+            <crown name="OnNewData">
+                <trait>released</trait>
+                <desc>Provide updated value of ModbusTCP variable.</desc>
+                <serves>
+                    <event name="OnNewData">
+                        <include>data-flow</include>
+                        <desc>Provide updated value of ModbusTCP variable.</desc>
+                        <param desc="Handle to internally used FlowConfig instance." multiplicity="1" name="handle" type="handle"/>
+                        <param desc="'CSK_MultiModbusTCPServer.OnNewVariableUpdateData[InstanceNUM]_[VarName]'&#10;&#10;Parameter&#10;1: Updated value (BINARY)" multiplicity="1" name="OnNewData" ref="MultiColorSelection_FC.ResultType" type="string"/>
+                    </event>
+                    <function name="create">
+                        <trait>released</trait>
+                        <desc>Internally used CSK_FlowConfig create function.</desc>
+                        <param constraint="1-99" desc="Numeric identifier of processing instance." multiplicity="1" name="Instance" type="int"/>
+                        <param desc="Name of variable." multiplicity="1" name="VarName" type="string"/>
+                        <return desc="Handle to internally used FlowConfig instance." multiplicity="1" name="handle" type="handle"/>
+                    </function>
+                    <function name="register">
+                        <trait>released</trait>
+                        <desc>Internally used CSK_FlowConfig register function.</desc>
+                        <param desc="Handle to internally used FlowConfig instance." multiplicity="1" name="handle" type="handle"/>
+                        <param desc="Internal parameter (not used)." multiplicity="1" name="eventname" type="string"/>
+                        <param desc="Internally used callback function." multiplicity="1" name="callback" type="string"/>
+                        <return desc="Success of register process." multiplicity="1" name="success" type="bool"/>
+                    </function>
+                </serves>
+            </crown>
+        </crown>
+        <crown name="Engine">
+            <desc>no description yet</desc>
+            <uses>
+                <event name="OnStarted"/>
+                <function name="getEnumValues"/>
+                <function name="getCurrentAppVersion"/>
+            </uses>
+        </crown>
+        <crown name="Timer">
+            <desc>no description yet</desc>
+            <uses>
+                <event name="OnExpired"/>
+                <function name="create"/>
+                <function name="setPeriodic"/>
+                <function name="start"/>
+                <function name="register"/>
+                <function name="setExpirationTime"/>
+            </uses>
+        </crown>
+        <crown name="CSK_PersistentData">
+            <desc>no description yet</desc>
+            <uses>
+                <event name="OnNewStatusCSKStyle"/>
+                <event name="OnResetAllModules"/>
+                <event name="OnInitialDataLoaded"/>
+                <function name="getParameter"/>
+                <function name="setModuleParameterName"/>
+                <function name="addParameter"/>
+                <function name="saveData"/>
+                <function name="getModuleParameterName"/>
+                <function name="getVersion"/>
+            </uses>
+        </crown>
+        <crown name="Modbus">
+            <desc>no description yet</desc>
+            <uses/>
+            <crown name="Server">
+                <desc>no description yet</desc>
+                <uses>
+                    <event name="OnWriteByClient"/>
+                    <function name="setInterface"/>
+                    <function name="setPort"/>
+                    <function name="writeVariable"/>
+                    <function name="register"/>
+                    <function name="create"/>
+                    <function name="removeVariable"/>
+                    <function name="start"/>
+                    <function name="stop"/>
+                    <function name="addVariable"/>
+                </uses>
+            </crown>
+        </crown>
+        <crown name="CSK_FlowConfig">
+            <desc>no description yet</desc>
+            <uses>
+                <event name="OnNewFlowConfig"/>
+                <event name="OnClearOldFlow"/>
+            </uses>
+        </crown>
+        <crown name="Log">
+            <desc>no description yet</desc>
+            <uses/>
+            <crown name="Handler">
+                <desc>no description yet</desc>
+                <uses>
+                    <function name="create"/>
+                </uses>
+            </crown>
+            <crown name="SharedLogger">
+                <desc>no description yet</desc>
+                <uses>
+                    <function name="create"/>
+                </uses>
+            </crown>
+        </crown>
+        <crown name="Script">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="isServedAsEvent"/>
+                <function name="getStartArgument"/>
+                <function name="deregister"/>
+                <function name="serveFunction"/>
+                <function name="releaseObject"/>
+                <function name="notifyEvent"/>
+                <function name="startScript"/>
+                <function name="register"/>
+                <function name="callFunction"/>
+                <function name="serveEvent"/>
+            </uses>
+        </crown>
+        <crown name="Container">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="get"/>
+                <function name="create"/>
+                <function name="list"/>
+                <function name="remove"/>
+                <function name="add"/>
+            </uses>
+        </crown>
+        <crown name="table">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="remove"/>
+                <function name="insert"/>
+                <function name="sort"/>
+                <function name="concat"/>
+            </uses>
+        </crown>
+        <crown name="string">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="pack"/>
+                <function name="char"/>
+                <function name="find"/>
+                <function name="sub"/>
+                <function name="format"/>
+            </uses>
+        </crown>
+        <crown name="Object">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="getType"/>
+            </uses>
+        </crown>
+        <crown name="DateTime">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="getTime"/>
+            </uses>
+        </crown>
+        <meta key="author">SICK AG</meta>
+        <meta key="version">0.1.0</meta>
+        <meta key="priority">low</meta>
+        <meta key="copy-protected">false</meta>
+        <meta key="read-protected">false</meta>
+        <meta key="crown2-flow-engine">false</meta>
+        <meta key="LuaLoadAllEngineAPI">false</meta>
+        <entry default="CSK_Module_MultiModbusTCPServer.lua" path="scripts"/>
+    </application>
+</manifest>
