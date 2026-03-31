@@ -15,19 +15,42 @@ local function getParameters()
 
   multiModbusTCPServerParameters.interface = '' -- Interface to use (must be set individually)
   multiModbusTCPServerParameters.port = 502 -- Port of Modbus TCP connection
+  multiModbusTCPServerParameters.maxConnections = 10 -- Maximum number of synchronous connections
+  multiModbusTCPServerParameters.transmitTimeout = 1000 -- Timeout in ms
+
+  multiModbusTCPServerParameters.showLog = true -- Show log in UI
 
   multiModbusTCPServerParameters.connectionStatus = false -- Server connection status
 
-  -- List of variables
-  multiModbusTCPServerParameters.listOfInputVariables = {}
-  multiModbusTCPServerParameters.listOfInputVariables.names = {}
-  multiModbusTCPServerParameters.listOfInputVariables.size = {}
-  multiModbusTCPServerParameters.listOfInputVariables.event = {}
+  -- List of registers
 
-  multiModbusTCPServerParameters.listOfHoldingVariables = {}
-  multiModbusTCPServerParameters.listOfHoldingVariables.names = {}
-  multiModbusTCPServerParameters.listOfHoldingVariables.size = {}
-  multiModbusTCPServerParameters.listOfHoldingVariables.event = {}
+  multiModbusTCPServerParameters.listOfDiscreteInputs = {}
+  multiModbusTCPServerParameters.listOfDiscreteInputs.address = {}
+  multiModbusTCPServerParameters.listOfDiscreteInputs.event = {}
+
+  multiModbusTCPServerParameters.listOfCoils = {}
+  multiModbusTCPServerParameters.listOfCoils.address = {}
+  multiModbusTCPServerParameters.listOfCoils.event = {}
+
+  multiModbusTCPServerParameters.listOfInputRegisters = {}
+  multiModbusTCPServerParameters.listOfInputRegisters.address = {}
+  multiModbusTCPServerParameters.listOfInputRegisters.dataType = {}
+  multiModbusTCPServerParameters.listOfInputRegisters.event = {}
+
+  multiModbusTCPServerParameters.listOfHoldingRegisters = {}
+  multiModbusTCPServerParameters.listOfHoldingRegisters.address = {}
+  multiModbusTCPServerParameters.listOfHoldingRegisters.dataType = {}
+  multiModbusTCPServerParameters.listOfHoldingRegisters.event = {}
+
+  --multiModbusTCPServerParameters.testTable = {}
+  --multiModbusTCPServerParameters.testTable['A12'] = 'ValueABC'
+  --table.insert(multiModbusTCPServerParameters.testTable, 'ValueA')
+
+  --multiModbusTCPServerParameters.testTable.additionalTable = {}
+  --table.insert(multiModbusTCPServerParameters.testTable.additionalTable, 'ValueB')
+  --table.insert(multiModbusTCPServerParameters.testTable.additionalTable, 'ValueC')
+  --multiModbusTCPServerParameters.testTable.additionalTable['A1'] = 'ValueB'
+  --multiModbusTCPServerParameters.testTable.additionalTable['A3'] = 'ValueC'
 
   return multiModbusTCPServerParameters
 end

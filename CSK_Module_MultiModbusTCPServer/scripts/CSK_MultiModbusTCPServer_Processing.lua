@@ -13,14 +13,13 @@ local scriptParams = Script.getStartArgument() -- Get parameters from model
 local multiModbusTCPServerInstanceNumber = scriptParams:get('multiModbusTCPServerInstanceNumber') -- number of this instance
 local multiModbusTCPServerInstanceNumberString = tostring(multiModbusTCPServerInstanceNumber) -- number of this instance as string
 
--- Event to notify updated Modbus variables
-Script.serveEvent("CSK_MultiModbusTCPServer.OnNewVariableUpdate".. multiModbusTCPServerInstanceNumberString, "MultiModbusTCPServer_OnNewVariableUpdate".. multiModbusTCPServerInstanceNumberString, 'string, binary')
 -- Event to forward content from this thread to Controller to show e.g. on UI
 Script.serveEvent("CSK_MultiModbusTCPServer.OnNewValueToForward".. multiModbusTCPServerInstanceNumberString, "MultiModbusTCPServer_OnNewValueToForward" .. multiModbusTCPServerInstanceNumberString, 'string, auto:[?*]')
 -- Event to forward update of e.g. parameter update to keep data in sync between threads
-Script.serveEvent("CSK_MultiModbusTCPServer.OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, "MultiModbusTCPServer_OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, 'int, string, auto:[?*], auto:?')
+Script.serveEvent("CSK_MultiModbusTCPServer.OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, "MultiModbusTCPServer_OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, 'int, string, auto:[?*], auto:[?*]')
 
-local modbusTCPServerHandle = Modbus.Server.create()
+local modbusTCPServerHandle = Modbus.TCPServer.create()
+local modbusTCPModelHandle = Modbus.Model.create()
 
 local processingParams = {}
 processingParams.activeInUI = false
@@ -29,16 +28,25 @@ processingParams.connectionStatus = scriptParams:get('connectionStatus')
 processingParams.interface = scriptParams:get('interface')
 processingParams.port = scriptParams:get('port')
 
+processingParams.maxConnections = scriptParams:get('maxConnections')
+processingParams.transmitTimeout = scriptParams:get('transmitTimeout')
+
+processingParams.showLog = scriptParams:get('showLog')
+
 processingParams.currentConnectionStatus = false --scriptParams:get('currentConnectionStatus')
 
-processingParams.forwardEvents = {} -- Table of events to register to update values of Modbus variables
+processingParams.forwardEvents = {} -- Table of events to register to update values of Modbus registers
 processingParams.forwardEventsFunctions = {} -- Table of functions to handle value updates
 
-processingParams.currentValues = {} -- Table to track current values of variables
-processingParams.currentValues.inputIDs = {}
-processingParams.currentValues.input = {}
-processingParams.currentValues.holdingIDs = {}
-processingParams.currentValues.holding = {}
+processingParams.dataTypes = {} -- -- Table to track data types of registers
+processingParams.dataTypes.inputRegisters = {}
+processingParams.dataTypes.holdingRegisters = {}
+
+processingParams.currentValues = {} -- Table to track current values of registers
+processingParams.currentValues.coils = {}
+processingParams.currentValues.discreteInputs = {}
+processingParams.currentValues.holdingRegisters = {}
+processingParams.currentValues.inputRegisters = {}
 
 local log = {}
 
@@ -56,94 +64,298 @@ local function sendLog()
   end
 end
 
---- Function to react if value was written by client
----@param name string[] The name of the variable
----@param value binary[] The new value of the variable
-local function handleOnWriteByClient(name, value)
-  for key, valName in pairs(name) do
-    _G.logger:fine(nameOfModule .. ": Value " .. tostring(valName) .. " was changed to " .. tostring(value[key]))
-
-    processingParams.currentValues.holding[processingParams.currentValues.holdingIDs[valName]] = value[key]
-
-    Script.notifyEvent("MultiModbusTCPServer_OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, multiModbusTCPServerInstanceNumber, 'ValueUpdateHolding', processingParams.currentValues.holding)
-
-    -- Forward data to other modules
-    Script.notifyEvent("MultiModbusTCPServer_OnNewVariableUpdate" .. multiModbusTCPServerInstanceNumberString, valName, value[key])
-    Script.notifyEvent("MultiModbusTCPServer_OnNewVariableUpdate" .. multiModbusTCPServerInstanceNumberString .. '_' .. valName, value[key])
-
-    table.insert(log, 1, DateTime.getTime() .. ' - Update = ' .. tostring(valName) .. ' = ' .. tostring(value[key]))
-
-    sendLog()
+local function pushNewData(modType, address, data)
+  if Script.isServedAsEvent("CSK_MultiModbusTCPServer.OnNewUpdate" .. multiModbusTCPServerInstanceNumberString .. '_' .. modType .. '_' .. tostring(address)) then
+    Script.notifyEvent("MultiModbusTCPServer_OnNewUpdate" .. multiModbusTCPServerInstanceNumberString .. '_' .. modType .. '_' .. tostring(address), data)
+    if processingParams.showLog then
+      table.insert(log, 1, DateTime.getTime() .. " - Update " .. tostring(modType) .. " at address " .. tostring(address) .. " to " .. tostring(data))
+      sendLog()
+    end
+  else
+    _G.logger:info(nameOfModule .. ": No event for " .. modType .. " at address " .. address)
   end
 end
-Modbus.Server.register(modbusTCPServerHandle, 'OnWriteByClient', handleOnWriteByClient)
+
+--- Function to react if value was written by client
+---@param type Modbus.Model.RegisterType Register type
+---@param address int Start address of the written register(s)
+---@param quantity int Quantity of the written register(s)
+local function handleOnWriteByClient(modType, address, quantity)
+  _G.logger:fine(nameOfModule .. ": Update of type " .. tostring(modType) .. '; Address = ' .. tostring(address) .. ', Quantity = ' .. tostring(quantity))
+
+  if modType == 'HOLDING_REGISTER' then
+    local content = modbusTCPModelHandle:getHoldingRegisters(address, quantity)
+    local checkQuantity = 0
+    while checkQuantity < quantity do
+      local unpackedData
+      if processingParams.dataTypes.holdingRegisters[tostring(address+checkQuantity)] == 'INT16' then
+        local tempData = string.sub(content, 1, 2)
+
+        if #tempData == 2 then
+          unpackedData = string.unpack('>i2', tempData)
+          processingParams.currentValues.holdingRegisters[tostring(address+checkQuantity)] = unpackedData
+          pushNewData(modType, address+checkQuantity, unpackedData)
+        else
+          _G.logger:warning(nameOfModule .. ": Received data is not INT16 format.")
+        end
+
+        if #content > 2 then
+          content = string.sub(content, 3, #content)
+        end
+        checkQuantity = checkQuantity + 1
+      elseif processingParams.dataTypes.holdingRegisters[tostring(address+checkQuantity)] == 'UINT16' then
+        local tempData = string.sub(content, 1, 2)
+
+        if #tempData == 2 then
+          unpackedData = string.unpack('>I2', tempData)
+          processingParams.currentValues.holdingRegisters[tostring(address+checkQuantity)] = unpackedData
+          pushNewData(modType, address+checkQuantity, unpackedData)
+        else
+          _G.logger:warning(nameOfModule .. ": Received data is not UINT16 format.")
+        end
+
+        if #content > 2 then
+          content = string.sub(content, 3, #content)
+        end
+        checkQuantity = checkQuantity + 1
+      elseif processingParams.dataTypes.holdingRegisters[tostring(address+checkQuantity)] == 'FLOAT' then
+        local tempData = string.sub(content, 1, 4)
+        if #tempData == 4 then
+          unpackedData = string.unpack('>f', tempData)
+          processingParams.currentValues.holdingRegisters[tostring(address+checkQuantity)] = unpackedData
+          pushNewData(modType, address+checkQuantity, unpackedData)
+        else
+          _G.logger:warning(nameOfModule .. ": Received data is not FLOAT format.")
+        end
+
+        if #content > 4 then
+          content = string.sub(content, 5, #content)
+        end
+        checkQuantity = checkQuantity + 2
+      elseif processingParams.dataTypes.holdingRegisters[tostring(address+checkQuantity)] == 'DOUBLE' then
+        local tempData = string.sub(content, 1, 8)
+        if #tempData == 8 then
+          unpackedData = string.unpack('>d', tempData)
+          processingParams.currentValues.holdingRegisters[tostring(address+checkQuantity)] = unpackedData
+          pushNewData(modType, address+checkQuantity, unpackedData)
+        end
+
+        if #content > 8 then
+          content = string.sub(content, 9, #content)
+        end
+        checkQuantity = checkQuantity + 4
+        --[[
+      elseif processingParams.dataTypes.holdingRegisters[tostring(address+checkQuantity)] == 'BOOL' then
+        local tempData = string.sub(content, 1, 2)
+        unpackedData = string.unpack('>I2', tempData)
+        if #content > 8 then
+          content = string.sub(content, 9, #content)
+        end
+        processingParams.currentValues.holdingRegisters[tostring(address+checkQuantity)] = unpackedData
+        pushNewData(modType, address+checkQuantity, unpackedData)
+        checkQuantity = checkQuantity + 4
+        ]]
+
+      else
+        _G.logger:info(nameOfModule .. ": HOLDING_REGISTER address " .. tostring(address+checkQuantity) .. " is not configured.")
+        break
+      end
+    end
+
+    local addressTable = {}
+    local valueTable = {}
+    for key, val in pairs(processingParams.currentValues.holdingRegisters) do
+      if val ~= nil and val ~= '' then
+        table.insert(addressTable, key)
+        table.insert(valueTable, val)
+      end
+    end
+    Script.notifyEvent("MultiModbusTCPServer_OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, multiModbusTCPServerInstanceNumber, 'UpdateHoldingRegister', addressTable, valueTable)
+
+  elseif modType == 'COIL' then
+    local content = modbusTCPModelHandle:getCoils(address, quantity)
+    for j=1, quantity do
+      local tempData = string.sub(content, 1, 1)
+      local unpackedData = string.unpack('>I1', tempData)
+      if unpackedData == 1 then
+        processingParams.currentValues.coils[tostring(address+j-1)] = true
+        -- Forward data to other modules
+        pushNewData(modType, address+j-1, true)
+      else
+        processingParams.currentValues.coils[tostring(address+j-1)] = false
+        pushNewData(modType, address+j-1, false)
+      end
+      if #content > 1 then
+        content = string.sub(content, 2, #content)
+      end
+    end
+
+    local addressTable = {}
+    local valueTable = {}
+    for key, val in pairs(processingParams.currentValues.coils) do
+      if val ~= nil and val ~= '' then
+        table.insert(addressTable, key)
+        table.insert(valueTable, val)
+      end
+    end
+    Script.notifyEvent("MultiModbusTCPServer_OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, multiModbusTCPServerInstanceNumber, 'UpdateCoils', addressTable, valueTable)
+  end
+end
+Modbus.TCPServer.register(modbusTCPServerHandle, 'OnWriteByClient', handleOnWriteByClient)
 
 --- Function to update the Modbus TCP server connection with new setup
 local function updateSetup()
   modbusTCPServerHandle:setPort(processingParams.port)
   modbusTCPServerHandle:setInterface(processingParams.interface)
-  --sendLog()
+  modbusTCPServerHandle:setMaxConnections(processingParams.maxConnections)
+  modbusTCPServerHandle:setTransmitTimeout(processingParams.transmitTimeout)
+  modbusTCPServerHandle:setModel(modbusTCPModelHandle)
 end
 
 --- Function to start the Modbus TCP server
 local function start()
   updateSetup()
   processingParams.currentConnectionStatus = modbusTCPServerHandle:start()
-  table.insert(log, 1, DateTime.getTime() .. ' - Start Server')
-  sendLog()
+  if processingParams.showLog then
+    table.insert(log, 1, DateTime.getTime() .. ' - Start Server')
+    sendLog()
+  end
 end
 
 --- Function to stop the Modbus TCP server
 local function stop()
   modbusTCPServerHandle:stop()
   processingParams.currentConnectionStatus = false
-  table.insert(log, 1, DateTime.getTime() .. ' - Stop Server')
-  sendLog()
+  if processingParams.showLog then
+    table.insert(log, 1, DateTime.getTime() .. ' - Stop Server')
+    sendLog()
+  end
 end
 
-local function handleOnSetValue(valueName, varType, value)
-  _G.logger:fine(nameOfModule .. ": Set value " .. tostring(valueName) .. " to " .. tostring(value))
-  Modbus.Server.writeVariable(modbusTCPServerHandle, valueName, value)
+local function handleOnSetValue(modType, address, value)
+  _G.logger:fine(nameOfModule .. ": Set '" .. tostring(modType) .. "' at address " .. tostring(address) .. " to " .. tostring(value))
 
-  if varType == 'INPUT' then
-    processingParams.currentValues.input[processingParams.currentValues.inputIDs[valueName]] = value
-    Script.notifyEvent("MultiModbusTCPServer_OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, multiModbusTCPServerInstanceNumber, 'ValueUpdateInput', processingParams.currentValues.input)
-  elseif varType == 'HOLDING' then
-    processingParams.currentValues.holding[processingParams.currentValues.holdingIDs[valueName]] = value
-    Script.notifyEvent("MultiModbusTCPServer_OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, multiModbusTCPServerInstanceNumber, 'ValueUpdateHolding', processingParams.currentValues.holding)
+  if modType == 'DISCRETE_INPUT' then
+    if value == true then
+      local suc = modbusTCPModelHandle:setDiscreteInputs(address, 1, string.pack('>I1', 1))
+    elseif value == false then
+      local suc = modbusTCPModelHandle:setDiscreteInputs(address, 1, string.pack('>I1', 0))
+    end
+
+    processingParams.currentValues.discreteInputs[tostring(address)] = value
+    local addressTable = {}
+    local valueTable = {}
+    for key, val in pairs(processingParams.currentValues.discreteInputs) do
+      if val ~= nil and val ~= '' then
+        table.insert(addressTable, key)
+        table.insert(valueTable, val)
+      end
+    end
+    Script.notifyEvent("MultiModbusTCPServer_OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, multiModbusTCPServerInstanceNumber, 'UpdateDiscreteInputs', addressTable, valueTable)
+
+  elseif modType == 'COIL' then
+    if value == true then
+      local suc = modbusTCPModelHandle:setCoils(address, 1, string.pack('>I1', 1))
+    elseif value == false then
+      local suc = modbusTCPModelHandle:setCoils(address, 1, string.pack('>I1', 0))
+    end
+
+    processingParams.currentValues.coils[tostring(address)] = value
+    local addressTable = {}
+    local valueTable = {}
+    for key, val in pairs(processingParams.currentValues.coils) do
+      if val ~= nil and val ~= '' then
+        table.insert(addressTable, key)
+        table.insert(valueTable, val)
+      end
+    end
+    Script.notifyEvent("MultiModbusTCPServer_OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, multiModbusTCPServerInstanceNumber, 'UpdateCoils', addressTable, valueTable)
+
+  elseif modType == 'HOLDING_REGISTER' then
+    if type(value) == 'boolean' then
+      if value == false then
+        value = 0
+      else
+        value = 1
+      end
+    end
+    processingParams.currentValues.holdingRegisters[tostring(address)] = value
+
+    if processingParams.dataTypes.holdingRegisters[tostring(address)] == 'INT16' then
+      modbusTCPModelHandle:setHoldingRegisters(address, 1, string.pack('>i2', value))
+    elseif processingParams.dataTypes.holdingRegisters[tostring(address)] == 'UINT16' then
+      modbusTCPModelHandle:setHoldingRegisters(address, 1, string.pack('>I2', value))
+    elseif processingParams.dataTypes.holdingRegisters[tostring(address)] == 'FLOAT' then
+      modbusTCPModelHandle:setHoldingRegisters(address, 2, string.pack('>f', value))
+    elseif processingParams.dataTypes.holdingRegisters[tostring(address)] == 'DOUBLE' then
+      modbusTCPModelHandle:setHoldingRegisters(address, 4, string.pack('>d', value))
+    else
+      modbusTCPModelHandle:setHoldingRegisters(address, 1, string.pack('>I2', value))
+    end
+
+    local addressTable = {}
+    local valueTable = {}
+    for key, val in pairs(processingParams.currentValues.holdingRegisters) do
+      if val ~= nil and val ~= '' then
+        table.insert(addressTable, key)
+        table.insert(valueTable, val)
+      end
+    end
+    --TODO
+    --Script.notifyEvent("MultiModbusTCPServer_OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, multiModbusTCPServerInstanceNumber, 'UpdateHoldingRegister', addressTable, valueTable)
+
+  elseif modType == 'INPUT_REGISTER' then
+    if type(value) == 'boolean' then
+      if value == false then
+        value = 0
+      else
+        value = 1
+      end
+    end
+    processingParams.currentValues.inputRegisters[tostring(address)] = value
+
+    if processingParams.dataTypes.inputRegisters[tostring(address)] == 'INT16' then
+      modbusTCPModelHandle:setInputRegisters(address, 1, string.pack('>i2', value))
+    elseif processingParams.dataTypes.inputRegisters[tostring(address)] == 'UINT16' then
+      modbusTCPModelHandle:setInputRegisters(address, 1, string.pack('>I2', value))
+    elseif processingParams.dataTypes.inputRegisters[tostring(address)] == 'FLOAT' then
+      modbusTCPModelHandle:setInputRegisters(address, 2, string.pack('>f', value))
+    elseif processingParams.dataTypes.inputRegisters[tostring(address)] == 'DOUBLE' then
+      modbusTCPModelHandle:setInputRegisters(address, 4, string.pack('>d', value))
+    else
+      modbusTCPModelHandle:setInputRegisters(address, 1, string.pack('>I2', value))
+    end
+
+    local addressTable = {}
+    local valueTable = {}
+    for key, val in pairs(processingParams.currentValues.inputRegisters) do
+      if val ~= nil and val ~= '' then
+        table.insert(addressTable, key)
+        table.insert(valueTable, val)
+      end
+    end
+    Script.notifyEvent("MultiModbusTCPServer_OnNewValueUpdate" .. multiModbusTCPServerInstanceNumberString, multiModbusTCPServerInstanceNumber, 'UpdateInputRegister', addressTable, valueTable)
   end
 
   -- Forward data to other modules
-  Script.notifyEvent("MultiModbusTCPServer_OnNewVariableUpdate" .. multiModbusTCPServerInstanceNumberString, valueName, value)
-  Script.notifyEvent("MultiModbusTCPServer_OnNewVariableUpdate" .. multiModbusTCPServerInstanceNumberString .. '_' .. valueName, value)
+  --TODO
+  pushNewData(modType, address, value)
 
-  table.insert(log, 1, DateTime.getTime() .. ' - Update = ' .. tostring(valueName) .. ' = ' .. tostring(value))
-  sendLog()
 end
 
-local function setInputValue(varName, value)
-  handleOnSetValue(varName, 'INPUT', value)
-end
-Script.serveFunction("CSK_MultiModbusTCPServer.setInputValue" .. multiModbusTCPServerInstanceNumberString, setInputValue, 'string:1, binary:1')
-
-local function setHoldingValue(varName, value)
-  handleOnSetValue(varName, 'HOLDING', value)
-end
-Script.serveFunction("CSK_MultiModbusTCPServer.setHoldingValue" .. multiModbusTCPServerInstanceNumberString, setHoldingValue, 'string:1, binary:1')
-
-local function createInternalForwardFunction(varName, varType)
-  local function setValue(varName, varType, data)
+local function createInternalForwardFunction(varType, address)
+  local function setValue(varType, address, data)
     if processingParams.currentConnectionStatus then
-      handleOnSetValue(varName, varType, data)
+      handleOnSetValue(varType, address, data)
     else
-      _G.logger:info(nameOfModule .. ": Set value not possible. Server not active")
+      _G.logger:info(nameOfModule .. ": Setting value not possible. Server not active")
     end
   end
 
   local function forwardContent(data)
-    setValue(varName, varType, data)
+    setValue(varType, address, data)
   end
-  processingParams.forwardEventsFunctions[varName] = forwardContent
+  processingParams.forwardEventsFunctions[varType .. '_' .. tostring(address)] = forwardContent
 end
 
 --- Function to handle updates of processing parameters from Controller
@@ -155,7 +367,10 @@ end
 ---@param value4 auto Value4 of parameter to update
 local function handleOnNewProcessingParameter(multiModbusTCPServerNo, parameter, value, value2, value3, value4)
 
-  if multiModbusTCPServerNo == multiModbusTCPServerInstanceNumber then -- set parameter only in selected script
+  if parameter == 'showLog' then
+    processingParams[parameter] = value
+
+  elseif multiModbusTCPServerNo == multiModbusTCPServerInstanceNumber then -- set parameter only in selected script
     _G.logger:fine(nameOfModule .. ": Update parameter '" .. parameter .. "' of multiModbusTCPServerInstanceNo." .. tostring(multiModbusTCPServerNo) .. " to value = " .. tostring(value))
 
     if parameter == 'start' then
@@ -164,76 +379,70 @@ local function handleOnNewProcessingParameter(multiModbusTCPServerNo, parameter,
     elseif parameter == 'stop' then
       stop()
 
-    elseif parameter == 'addVariable' then
-      if value3 == 'INPUT' then
-        table.insert(processingParams.currentValues.input, '')
-        processingParams.currentValues.inputIDs[value] = #processingParams.currentValues.input
+    elseif parameter == 'addRegister' then
+      if value == 'DISCRETE_INPUT' then
+        processingParams.currentValues.discreteInputs[tostring(value2)] = ''
 
-      elseif value3 == 'HOLDING' then
-        table.insert(processingParams.currentValues.holding, '')
-        processingParams.currentValues.holdingIDs[value] = #processingParams.currentValues.holding
+      elseif value == 'COIL' then
+        processingParams.currentValues.coils[tostring(value2)] = ''
+
+      elseif value == 'INPUT_REGISTER' then
+        processingParams.currentValues.inputRegisters[tostring(value2)] =  ''
+        processingParams.dataTypes.inputRegisters[tostring(value2)] = value4
+
+      elseif value == 'HOLDING_REGISTER' then
+        processingParams.currentValues.holdingRegisters[tostring(value2)] =  ''
+        processingParams.dataTypes.holdingRegisters[tostring(value2)] = value4
       end
-      Modbus.Server.addVariable(modbusTCPServerHandle, value, value2, value3)
 
-      local isServed = Script.isServedAsEvent("CSK_MultiModbusTCPServer.OnNewVariableUpdate".. multiModbusTCPServerInstanceNumberString .. '_' .. tostring(value))
+      local isServed = Script.isServedAsEvent("CSK_MultiModbusTCPServer.OnNewUpdate".. multiModbusTCPServerInstanceNumberString .. '_' .. tostring(value) .. '_' .. tostring(value2))
 
       if not isServed then
-        Script.serveEvent("CSK_MultiModbusTCPServer.OnNewVariableUpdate".. multiModbusTCPServerInstanceNumberString .. '_' .. tostring(value), "MultiModbusTCPServer_OnNewVariableUpdate".. multiModbusTCPServerInstanceNumberString .. '_' .. tostring(value), 'string')
+        Script.serveEvent("CSK_MultiModbusTCPServer.OnNewUpdate".. multiModbusTCPServerInstanceNumberString .. '_' .. tostring(value) .. '_' .. tostring(value2), "MultiModbusTCPServer_OnNewUpdate".. multiModbusTCPServerInstanceNumberString .. '_' .. tostring(value) .. '_' .. tostring(value2), 'auto')
+      end
+      local fullName = tostring(value) .. '_' .. tostring(value2)
+
+      if processingParams.forwardEventsFunctions[fullName] then
+        Script.deregister(processingParams.forwardEvents[fullName], processingParams.forwardEventsFunctions[fullName])
+        processingParams.forwardEventsFunctions[fullName] = nil
       end
 
-      if processingParams.forwardEventsFunctions[value] then
-        Script.deregister(value, processingParams.forwardEventsFunctions[value])
-        processingParams.forwardEventsFunctions[value] = nil
+      processingParams.forwardEvents[fullName] = value3
+
+      createInternalForwardFunction(value, value2)
+
+      if value3 ~= '' then
+        _G.logger:fine(nameOfModule .. ": Register to event '" .. value3 .. "' to forward its content to address " .. value2 .. " of " .. value)
+        Script.register(value3, processingParams.forwardEventsFunctions[fullName])
       end
 
-      processingParams.forwardEvents[value] = value4
+    elseif parameter == 'removeRegister' then
 
-      createInternalForwardFunction(value, value3)
-
-      if value4 ~= '' then
-        _G.logger:fine(nameOfModule .. ": Register to event '" .. value4 .. "' to forward its content to variable '" .. value .. "'")
-        Script.register(value4, processingParams.forwardEventsFunctions[value])
+      if value == 'DISCRETE_INPUT' then
+        processingParams.currentValues.discreteInputs[value2] = nil
+      elseif value == 'COIL' then
+        processingParams.currentValues.coils[value2] = nil
+      elseif value == 'INPUT_REGISTER' then
+        processingParams.currentValues.inputRegisters[value2] = nil
+        processingParams.dataTypes.inputRegisters[value2] = nil
+      elseif value == 'HOLDING_REGISTER' then
+        processingParams.currentValues.holdingRegisters[value2] = nil
+        processingParams.dataTypes.holdingRegisters[value2] = nil
       end
 
-    elseif parameter == 'removeVariable' then
-
-      if value2 == 'INPUT' then
-        for key, val in pairs(processingParams.currentValues.inputIDs) do
-          if val >= value3 then
-            processingParams.currentValues.inputIDs[key] = val -1
-          elseif val == value3 then
-            processingParams.currentValues.inputIDs[key] = nil
-          end
-        end
-        table.remove(processingParams.currentValues.input, value3)
-      elseif value2 == 'HOLDING' then
-        for key, val in pairs(processingParams.currentValues.holdingIDs) do
-          if val > value3 then
-            processingParams.currentValues.holdingIDs[key] = val -1
-          elseif val == value3 then
-            processingParams.currentValues.holdingIDs[key] = nil
-          end
-        end
-        table.remove(processingParams.currentValues.holding, value3)
+      local fullName = value .. '_' .. tostring(value2)
+      if processingParams.forwardEvents[fullName] then
+        _G.logger:fine(nameOfModule .. ": Deregister from event '" .. processingParams.forwardEvents[fullName] .. "' for address '" .. value2 .. "' of " .. tostring(value))
+        Script.deregister(processingParams.forwardEvents[fullName], processingParams.forwardEventsFunctions[fullName])
+        processingParams.forwardEvents[fullName] = nil
+        processingParams.forwardEventsFunctions[fullName] = nil
       end
 
-      Modbus.Server.removeVariable(modbusTCPServerHandle, value)
-
-      if processingParams.forwardEvents[value] then
-
-        _G.logger:fine(nameOfModule .. ": Deregister from event '" .. processingParams.forwardEvents[value] .. " for variable '" .. value .. "'.")
-
-        Script.deregister(processingParams.forwardEvents[value], processingParams.forwardEventsFunctions[value])
-        processingParams.forwardEvents[value] = nil
-        processingParams.forwardEventsFunctions[value] = nil
-      end
-
-    elseif parameter == 'removeAllVariables' then
+    elseif parameter == 'removeAllRegisters' then
       for key, value in pairs(processingParams.forwardEvents) do
-        Modbus.Server.removeVariable(modbusTCPServerHandle, key)
 
         if processingParams.forwardEvents[value] ~= '' then
-          _G.logger:fine(nameOfModule .. ": Deregister from event '" .. value .. " for variable '" .. key .. "'.")
+          _G.logger:fine(nameOfModule .. ": Deregister from event '" .. value)
           Script.deregister(value, processingParams.forwardEventsFunctions[key])
         end
         processingParams.forwardEventsFunctions[key] = nil
@@ -241,32 +450,49 @@ local function handleOnNewProcessingParameter(multiModbusTCPServerNo, parameter,
 
       processingParams.forwardEvents = {}
 
-      processingParams.currentValues.input = {}
-      processingParams.currentValues.holding = {}
+      processingParams.currentValues.discreteInputs = {}
+      processingParams.currentValues.coils = {}
+      processingParams.currentValues.inputRegisters = {}
+      processingParams.currentValues.holdingRegisters = {}
 
-      processingParams.currentValues.inputIDs ={}
-      processingParams.currentValues.holdingIDs = {}
+      processingParams.dataTypes.inputRegisters = {}
+      processingParams.dataTypes.holdingRegisters = {}
+
 
     elseif parameter == 'updateEvent' then
-      if processingParams.forwardEventsFunctions[value] then
-        Script.deregister(value, processingParams.forwardEventsFunctions[value])
-        processingParams.forwardEventsFunctions[value] = nil
+
+      if value == 'INPUT_REGISTER' then
+        processingParams.dataTypes.inputRegisters[tostring(value2)] = value4
+      elseif value == 'HOLDING_REGISTER' then
+        processingParams.dataTypes.holdingRegisters[tostring(value2)] = value4
+      end
+      local fullName = value .. '_' .. tostring(value2)
+      if processingParams.forwardEventsFunctions[fullName] then
+        Script.deregister(processingParams.forwardEvents[fullName], processingParams.forwardEventsFunctions[fullName])
+        processingParams.forwardEventsFunctions[fullName] = nil
       end
 
-      processingParams.forwardEvents[value] = value3
+      processingParams.forwardEvents[fullName] = value3
 
       createInternalForwardFunction(value, value2)
 
-      if value4 ~= '' then
-        _G.logger:fine(nameOfModule .. ": Register to event '" .. value3 .. "' to forward its content to variable '" .. value .. "'")
-        Script.register(value3, processingParams.forwardEventsFunctions[value])
+
+      if value3 ~= '' then
+        _G.logger:fine(nameOfModule .. ": Register to event '" .. value3 .. "' to forward its content to address " .. tostring(value2) .. " of " .. tostring(value))
+        Script.register(value3, processingParams.forwardEventsFunctions[fullName])
       end
 
+    elseif parameter == 'setCoilValue' then
+      handleOnSetValue('COIL', tonumber(value), value2)
+
+    elseif parameter == 'setDiscreteInputValue' then
+      handleOnSetValue('DISCRETE_INPUT', tonumber(value), value2)
+
     elseif parameter == 'setInputValue' then
-      handleOnSetValue(value, 'INPUT', value2)
+      handleOnSetValue('INPUT_REGISTER', tonumber(value), value2)
 
     elseif parameter == 'setHoldingValue' then
-      handleOnSetValue(value, 'HOLDING', value2)
+      handleOnSetValue('HOLDING_REGISTER', tonumber(value), value2)
 
     else
       processingParams[parameter] = value

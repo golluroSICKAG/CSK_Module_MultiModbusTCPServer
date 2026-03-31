@@ -17,13 +17,27 @@ Typically the features of this module are used like this (check also main script
 - Set port via 'setServerPort'. +
 - Connect to server via 'setStatusOfServer'. +
 {empty} + 
-**2) Setup variables** +
-It is possible to configure INPUT and HOLDING variables. Make use the 'addVariable' function. +
-For each variable it is possible to configure an event to register to and to set received values to the variable. +
+**2) Setup register** +
+It is possible to configure discrete inputs, coils, input register and holding register. Make use the 'addRegister' function. +
+For each register it is possible to configure an event to register to and to set received values to the variable. +
 It is possible to set a value via 'setInputValueNUM' (replace NUM by its instance identifier). +
-If the value of a variable changed, it will be notified via the related event, like: OnNewVariableUpdateNUM_VAR +
-NUM and VAR will be replaced by the number of instance and name of the variable (e.g. "OnNewVariableUpdate1_VarA"). +
+If the value of a register changed, it will be notified via the related event, like: OnNewUpdateNUM_TYPE_ADDRESS +
+NUM will be replaced by the number of instance, TYPE by the type of register and ADDRESS by the used address (e.g. "OnNewUpdate1_COIL_4"). +
 {empty} + </desc>
+            <enum name="RegisterType" trait="released">
+                <desc>Types of Modbus register.</desc>
+                <item desc="Discrete input register." name="DISCRETE_INPUT">DISCRETE_INPUT</item>
+                <item desc="Coil" name="COIL">COIL</item>
+                <item desc="Input register" name="INPUT_REGISTER">INPUT_REGISTER</item>
+                <item desc="Holding register" name="HOLDING_REGISTER">HOLDING_REGISTER</item>
+            </enum>
+            <enum name="DataType" trait="released">
+                <desc>Type of data.</desc>
+                <item desc="Signed Integer 16bit" name="INT16">INT16</item>
+                <item desc="Unsigned Integer 16bit" name="UINT16">UINT16</item>
+                <item desc="Double 64bit" name="DOUBLE">DOUBLE</item>
+                <item desc="Float 32bit" name="FLOAT">FLOAT</item>
+            </enum>
             <serves>
                 <event name="OnNewStatusLoadParameterOnReboot">
                     <desc>Notify status if parameters should be loaded on app/device boot up.</desc>
@@ -79,7 +93,7 @@ NUM will be replaced by the number of instance (e.g. "OnNewValueUpdate1"). +</de
                     <param desc="Instance new value is coming from." multiplicity="1" name="instance" type="int"/>
                     <param desc="Name of the paramter to update/sync." multiplicity="1" name="parameter" type="string"/>
                     <param desc="Value to update." multiplicity="[?*]" name="value" type="auto"/>
-                    <param desc="Optionally if internal parameter should be used for internal objects." multiplicity="[?*]" name="valueB" type="int"/>
+                    <param desc="Optionally if internal parameter should be used for internal objects." multiplicity="[?*]" name="valueB" type="auto"/>
                 </event>
                 <event name="OnNewValueToForwardNUM">
                     <desc>Example of dynamically created event to forward data from instance thread to Controller part of module, e.g. to forward values to UI. +
@@ -107,62 +121,47 @@ NUM will be replaced by the number of instance (e.g. "OnNewValueToForward1"). +<
                     <desc>Notify latest log messages (max. 200).</desc>
                     <param desc="Logs" multiplicity="1" name="logs" type="string"/>
                 </event>
-                <event name="OnNewStatusListOfInputVariables">
-                    <desc>Notify list of INPUT variables.</desc>
-                    <param desc="List of INPUT variables." multiplicity="1" name="list" type="string"/>
+                <event name="OnNewStatusListOfInputRegisters">
+                    <desc>Notify list of input registers.</desc>
+                    <param desc="List of INPUT registers." multiplicity="1" name="list" type="string"/>
                 </event>
-                <event name="OnNewStatusListOfHoldingVariables">
-                    <desc>Notify list of HOLDING variables.</desc>
-                    <param desc="List of HOLDING variables." multiplicity="1" name="list" type="string"/>
+                <event name="OnNewStatusListOfHoldingRegisters">
+                    <desc>Notify list of holding registers.</desc>
+                    <param desc="List of HOLDING registers." multiplicity="1" name="list" type="string"/>
                 </event>
-                <event name="OnNewStatusTempVarInputName">
-                    <desc>Notify name to use for new INPUT variable.</desc>
-                    <param desc="Name of variable." multiplicity="1" name="name" type="string"/>
+                <event name="OnNewStatusTempInputRegisterDataType">
+                    <desc>Notify type of data to use for new input resgister.</desc>
+                    <param desc="Data type." multiplicity="1" name="dataType" type="string"/>
                 </event>
-                <event name="OnNewStatusTempVarHoldingName">
-                    <desc>Notify name to use for new HOLDING variable.</desc>
-                    <param desc="Name of variable." multiplicity="1" name="name" type="string"/>
+                <event name="OnNewStatusTempHoldingRegisterDataType">
+                    <desc>Notify type of data to use for new holding register.</desc>
+                    <param desc="Data type." multiplicity="1" name="dataType" type="string"/>
                 </event>
-                <event name="OnNewStatusTempVarInputSize">
-                    <desc>Notify status of byte size to use for new input variable.</desc>
-                    <param desc="Size in bytes." multiplicity="1" name="size" type="int"/>
-                </event>
-                <event name="OnNewStatusTempVarHoldingSize">
-                    <desc>Notify status of byte size to use for new holding variable.</desc>
-                    <param desc="Size in bytes." multiplicity="1" name="size" type="int"/>
-                </event>
-                <event name="OnNewStatusTempVarInputRegisteredEvent">
-                    <desc>Notify status of event to register value of new input variable to.</desc>
+                <event name="OnNewStatusTempInputRegisterEvent">
+                    <desc>Notify status of event to register value of new input register to add.</desc>
                     <param desc="Name of event," multiplicity="1" name="name" type="string"/>
                 </event>
-                <event name="OnNewStatusTempVarHoldingRegisteredEvent">
-                    <desc>Notify status of event to register value of new input variable to.</desc>
+                <event name="OnNewStatusTempHoldingRegisterEvent">
+                    <desc>Notify status of event to register value of new input register to add.</desc>
                     <param desc="Name of event," multiplicity="1" name="name" type="string"/>
                 </event>
-                <event name="OnNewVariableUpdateNUM">
+                <event name="OnNewUpdateNUM_TYPE_ADDRESS">
                     <trait>released</trait>
-                    <desc>Example of dynamically created event to forward updates of Modbus variables. +
-NUM will be replaced by the number of instance (e.g. "OnNewVariableUpdate1"). +</desc>
-                    <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
-                    <param desc="Updated value." multiplicity="1" name="value" type="binary"/>
-                </event>
-                <event name="OnNewVariableUpdateNUM_VAR">
-                    <trait>released</trait>
-                    <desc>Example of dynamically created event to forward updates of Modbus variables. +
-NUM and VAR will be replaced by the number of instance and name of the variable (e.g. "OnNewVariableUpdate1_VarA"). +</desc>
-                    <param desc="Updated value." multiplicity="1" name="value" type="binary"/>
+                    <desc>Example of dynamically created event to forward updates of Modbus registers. +
+NUM will be replaced by the instance identifier, TYPE by the register type and ADDRESS by the related address (e.g. "OnNewUpdate1_COIL_4"). +</desc>
+                    <param desc="Updated value (NUMBER for 'INPUT/HOLDING_REGISTER', BOOL for 'DISCRETE_INPUT, COIL')" multiplicity="1" name="value" type="auto"/>
                 </event>
                 <event name="OnNewStatusServerActive">
                     <desc>Notify if server is active.</desc>
                     <param desc="Status" multiplicity="1" name="status" type="bool"/>
                 </event>
-                <event name="OnNewStatusInputValueToSet">
-                    <desc>Notfiy value to set for INPUT variable.</desc>
-                    <param desc="Value" multiplicity="1" name="value" type="int"/>
+                <event name="OnNewStatusInputRegisterValueToSet">
+                    <desc>Notfiy value to set for input register variable.</desc>
+                    <param desc="Value" multiplicity="1" name="value" type="float"/>
                 </event>
-                <event name="OnNewStatusHoldingValueToSet">
-                    <desc>Notify value to set for HOLDING variable.</desc>
-                    <param desc="Value" multiplicity="1" name="value" type="int"/>
+                <event name="OnNewStatusHoldingRegisterValueToSet">
+                    <desc>Notify value to set for holding register.</desc>
+                    <param desc="Value" multiplicity="1" name="value" type="float"/>
                 </event>
                 <event name="OnNewStatusServerPort">
                     <desc>Notify port of ModbusTCP server.</desc>
@@ -175,6 +174,50 @@ NUM and VAR will be replaced by the number of instance and name of the variable 
                 <event name="OnNewStatusSelectedInterface">
                     <desc>Notify selected interface.</desc>
                     <param desc="Interface" multiplicity="1" name="interface" type="string"/>
+                </event>
+                <event name="OnNewStatusTempDiscreteInputAddress">
+                    <desc>Notify preset address for discrete input to create.</desc>
+                    <param desc="Address" multiplicity="1" name="address" type="int"/>
+                </event>
+                <event name="OnNewStatusTempCoilAddress">
+                    <desc>Notify preset address for coil to add.</desc>
+                    <param desc="Address" multiplicity="1" name="address" type="int"/>
+                </event>
+                <event name="OnNewStatusTempDiscreteInputRegisteredEvent">
+                    <desc>Notify preset event name for discrete input to create.</desc>
+                    <param desc="Name of event to register." multiplicity="1" name="event" type="string"/>
+                </event>
+                <event name="OnNewStatusTempCoilRegisteredEvent">
+                    <desc/>
+                    <param desc="Name of event to register." multiplicity="1" name="event" type="string"/>
+                </event>
+                <event name="OnNewStatusDiscreteInputStatusToSet">
+                    <desc>Notify status of currently selected discrete input.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewStatusCoilStatusToSet">
+                    <desc>Notify status of selected coil.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewStatusListOfCoils">
+                    <desc>Notify list of coil status.</desc>
+                    <param desc="List of coils and status." multiplicity="1" name="coilList" type="string"/>
+                </event>
+                <event name="OnNewStatusListOfDiscreteInputs">
+                    <desc>Notify list of discrete inputs and status.</desc>
+                    <param desc="List of discrete inputs and status." multiplicity="1" name="discreteInputList" type="string"/>
+                </event>
+                <event name="OnNewStatusTempInputRegisterAddress">
+                    <desc>Notify preset address for input register to add.</desc>
+                    <param desc="Address" multiplicity="1" name="address" type="int"/>
+                </event>
+                <event name="OnNewStatusTempHoldingRegisterAddress">
+                    <desc>Notify preset address for holding register to add.</desc>
+                    <param desc="Address" multiplicity="1" name="address" type="int"/>
+                </event>
+                <event name="OnNewStatusShowLog">
+                    <desc>Notify status to show WebSocket communication log in UI.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
                 </event>
                 <function name="setParameterName">
                     <desc>Function to set the name of the parameters if saved/loaded via the CSK_PersistentData module.</desc>
@@ -195,11 +238,6 @@ NUM and VAR will be replaced by the number of instance and name of the variable 
                 <function name="getInstancesAmount">
                     <desc>Get the amount of created instances of this module.</desc>
                     <return desc="Amount of created instances." multiplicity="1" name="amount" type="int"/>
-                </function>
-                <function name="setRegisterEvent">
-                    <desc>Configure event that this module should listen to. If this one is notified, it will be linked to internal processing function. +
-(Will be set to currently active instance, see "setSelectedObject")</desc>
-                    <param desc="(external) Event name to listen to." multiplicity="1" name="event" type="string"/>
                 </function>
                 <function name="addInstance">
                     <desc>Function to add an additional instance.</desc>
@@ -240,83 +278,81 @@ IMPORTANT: As instances start their own threads, the module needs to be restarte
                     <desc>Function to set status of Modbus TCP/IP server.</desc>
                     <param desc="Status" multiplicity="1" name="status" type="bool"/>
                 </function>
-                <function name="addVariable">
-                    <desc>Function to add a new variable to Modbus TCP/IP server.</desc>
-                    <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
-                    <param desc="Number of bytes." multiplicity="1" name="size" type="int"/>
-                    <param desc="Type of Modbus register to use" multiplicity="1" name="varType" type="string"/>
+                <function name="addRegister">
+                    <desc>Function to add a new register to Modbus TCP/IP server.</desc>
+                    <param desc="Type of Modbus register to use" multiplicity="1" name="regType" type="string"/>
+                    <param desc="Address" multiplicity="1" name="address" type="int"/>
                     <param desc="Name of event to register value." multiplicity="?" name="eventName" type="string"/>
+                    <param desc="Data type (needed for Input and Holding register)." multiplicity="?" name="dataType" type="enum"/>
+                    <param desc="Optional parameter if event should not be updated if register already exists." multiplicity="?" name="noEventUpdate" type="bool"/>
                 </function>
-                <function name="addInputVariableViaUI">
-                    <desc>Function to add new input variable with preset configuration.</desc>
+                <function name="addInputRegisterViaUI">
+                    <desc>Function to add new input register with preset configuration.</desc>
                 </function>
-                <function name="addHoldingVariableViaUI">
-                    <desc>Function to add new holding variable with preset configuration.</desc>
+                <function name="addHoldingRegisterViaUI">
+                    <desc>Function to add new holding register with preset configuration.</desc>
                 </function>
-                <function name="setInputVarName">
-                    <desc>Function to preset name of new input variable to create.</desc>
-                    <param desc="Name of new variable." multiplicity="1" name="name" type="string"/>
+                <function name="setInputRegisterAddress">
+                    <desc>Function to preset address of new input register to create.</desc>
+                    <param desc="Address of new register." multiplicity="1" name="address" type="int"/>
                 </function>
-                <function name="setHoldingVarName">
-                    <desc>Function to preset name of new holding variable to create.</desc>
-                    <param desc="Name of new variable." multiplicity="1" name="name" type="string"/>
+                <function name="setHoldingRegisterAddress">
+                    <desc>Function to preset address of new holding register to create.</desc>
+                    <param desc="Address of new holding register." multiplicity="1" name="address" type="int"/>
                 </function>
-                <function name="setInputVarSize">
-                    <desc>Function to preset byte size of new input variable to create.</desc>
-                    <param desc="Size of variable (in Bytes)." multiplicity="1" name="size" type="int"/>
+                <function name="setInputRegisterDataType">
+                    <desc>Function to preset data type of new input register to create.</desc>
+                    <param desc="Data type." multiplicity="1" name="dataType" ref="CSK_MultiModbusTCPServer.DataType" type="enum"/>
                 </function>
-                <function name="setInputVarRegisteredEvent">
-                    <desc>Function to set the event to register the value of the new input variable.</desc>
+                <function name="setInputRegisterEvent">
+                    <desc>Function to set the event to register the value of the new input register.</desc>
                     <param desc="Name of event." multiplicity="1" name="event" type="string"/>
                 </function>
-                <function name="setHoldingVarRegisteredEvent">
-                    <desc>Function to set the event to register the value of the new holding variable.</desc>
+                <function name="setHoldingRegisterEvent">
+                    <desc>Function to set the event to register the value of the new holding register.</desc>
                     <param desc="Name of event." multiplicity="1" name="event" type="string"/>
                 </function>
-                <function name="setInputVarTableSelection">
-                    <desc>Function to set selection of INPUT variable table.</desc>
+                <function name="setInputRegisterTableSelection">
+                    <desc>Function to set selection of input register table.</desc>
                     <param desc="Selection" multiplicity="1" name="selection" type="string"/>
                 </function>
-                <function name="removeInputVariableViaUI">
-                    <desc>Function to remove preselected INPUT variable.</desc>
+                <function name="removeInputRegisterViaUI">
+                    <desc>Function to remove preselected input register.</desc>
                 </function>
-                <function name="removeHoldingVariableViaUI">
-                    <desc>Function to remove preselected HOLDING variable.</desc>
+                <function name="removeHoldingRegisterViaUI">
+                    <desc>Function to remove preselected holding register.</desc>
                 </function>
-                <function name="removeHoldingVariable">
-                    <desc>Function to remove HOLDING variable.</desc>
-                    <param desc="Name of HOLDING variable to remove." multiplicity="1" name="varName" type="string"/>
+                <function name="removeHoldingRegister">
+                    <desc>Function to remove holding register.</desc>
+                    <param desc="Address of holding register to remove." multiplicity="1" name="address" type="string"/>
                 </function>
-                <function name="removeInputVariable">
-                    <desc>Function to remove INPUT variable.</desc>
-                    <param desc="Name of INPUT variable to remove." multiplicity="1" name="varName" type="string"/>
+                <function name="removeInputRegister">
+                    <desc>Function to remove input register.</desc>
+                    <param desc="Address of input register to remove." multiplicity="1" name="address" type="string"/>
                 </function>
-                <function name="setInputValueNUM">
-                    <desc>Function to update value of INPUT variable.
-Example of dynamically created function to set the value of an INPUT  variable. +
+                <function name="setInputRegisterNUM">
+                    <desc>Function to update value of input register.
+Example of dynamically created function to set the value of an input register. +
 NUM will be replaced by the number of instance (e.g. "setInputValue1"). +</desc>
-                    <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
+                    <param desc="Address to update." multiplicity="1" name="address" type="int"/>
                     <param desc="Value" multiplicity="1" name="value" type="binary"/>
                 </function>
                 <function name="setHoldingValueNUM">
-                    <desc>Example of dynamically created function to set the value of a HOLDING variable. +
+                    <desc>Example of dynamically created function to set the value of a holding register. +
 NUM will be replaced by the number of instance (e.g. "setHoldingValue1"). +</desc>
-                    <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
+                    <param desc="Address to update." multiplicity="1" name="address" type="int"/>
                     <param desc="Value" multiplicity="1" name="value" type="binary"/>
                 </function>
-                <function name="setInputValueToSetViaUI">
-                    <desc>Function to preset a value to set for a selected INPUT variable.</desc>
-                    <param desc="Value" multiplicity="1" name="value" type="int"/>
+                <function name="setInputRegisterValueViaUI">
+                    <desc>Function to preset a value to set for a selected input register.</desc>
+                    <param desc="Value" multiplicity="1" name="value" type="float"/>
                 </function>
-                <function name="setHoldingValueToSetViaUI">
-                    <desc>Function to preset a value to set for a selected HOLDING variable.</desc>
-                    <param desc="Value" multiplicity="1" name="value" type="int"/>
-                </function>
-                <function name="setInputValueViaUI">
-                    <desc>Function to set preconfigured value to selected INPUT variable.</desc>
+                <function name="setHoldingRegisterValueViaUI">
+                    <desc>Function to preset a value to set for a selected holding register.</desc>
+                    <param desc="Value" multiplicity="1" name="value" type="float"/>
                 </function>
                 <function name="setHoldingValueViaUI">
-                    <desc>Function to set preconfigured value to selected HOLDING variable.</desc>
+                    <desc>Function to set preconfigured value to selected holding register.</desc>
                 </function>
                 <function name="setServerPort">
                     <desc>Function to set port of ModbusTCP server.</desc>
@@ -326,18 +362,76 @@ NUM will be replaced by the number of instance (e.g. "setHoldingValue1"). +</des
                     <desc>Function to set interface of ModbusTCP server.</desc>
                     <param desc="Interface" multiplicity="1" name="interface" type="string"/>
                 </function>
-                <function name="setHoldingVarSize">
-                    <desc>Function to preset byte size of new holding variable to create.</desc>
-                    <param desc="Size of variable to create (in Bytes)." multiplicity="1" name="size" type="int"/>
+                <function name="setHoldingRegisterDataType">
+                    <desc>Function to preset data type of new holding register to create.</desc>
+                    <param desc="Data type." multiplicity="1" name="dataType" type="enum"/>
                 </function>
-                <function name="setHoldingVarTableSelection">
-                    <desc>Function to set selection of HOLDING variable table.</desc>
+                <function name="setHoldingRegisterTableSelection">
+                    <desc>Function to set selection of holding register table.</desc>
                     <param desc="Selection" multiplicity="1" name="selection" type="string"/>
                 </function>
-                <function name="setRegisteredEventOfVariable">
-                    <desc>Function to set registered event of specific variable.</desc>
-                    <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
+                <function name="setRegisteredEventOfRegister">
+                    <desc>Function to set registered event of specific register.</desc>
+                    <param desc="Type of register." multiplicity="1" name="regType" type="enum"/>
+                    <param desc="Address" multiplicity="1" name="address" type="int"/>
                     <param desc="Name of event to register to." multiplicity="1" name="eventName" type="string"/>
+                    <param desc="Data type (needed for regType INPUT_REGISTER and HOLDING_REGISTER." multiplicity="?" name="dataType" type="string"/>
+                </function>
+                <function name="setDiscreteInputAddress">
+                    <desc>Function to preset address for discrete input to add.</desc>
+                    <param desc="Address" multiplicity="1" name="address" type="int"/>
+                </function>
+                <function name="setCoilAddress">
+                    <desc>Function to preset address for coil to add.</desc>
+                    <param desc="Address" multiplicity="1" name="address" type="int"/>
+                </function>
+                <function name="setDiscreteInputRegisteredEvent">
+                    <desc>Function to preset event to register discrete input to add.</desc>
+                    <param desc="Name of event to register discrete input." multiplicity="1" name="event" type="string"/>
+                </function>
+                <function name="setCoilRegisteredEvent">
+                    <desc>Function to preset event to register coil to add.</desc>
+                    <param desc="Name of event to register coil." multiplicity="1" name="event" type="string"/>
+                </function>
+                <function name="addDiscreteInputViaUI">
+                    <desc>Function to add discrete input with preset configuration.</desc>
+                </function>
+                <function name="addCoilViaUI">
+                    <desc>Function to add preconfigured coil.</desc>
+                </function>
+                <function name="removeDiscreteInput">
+                    <desc>Function to remove discrete input.</desc>
+                    <param desc="Address of discrete register to remove." multiplicity="1" name="address" type="string"/>
+                </function>
+                <function name="removeCoil">
+                    <desc>Function to remove coil.</desc>
+                    <param desc="Address of coil to remove." multiplicity="1" name="address" type="string"/>
+                </function>
+                <function name="removeCoilViaUI">
+                    <desc>Function to remove preselected coil.</desc>
+                </function>
+                <function name="removeDiscreteInputViaUI">
+                    <desc>Function to remove preselected discrete register.</desc>
+                </function>
+                <function name="setDiscreteInputTableSelection">
+                    <desc>Function to set selection of discrete input table.</desc>
+                    <param desc="Selection" multiplicity="1" name="selection" type="string"/>
+                </function>
+                <function name="setCoilTableSelection">
+                    <desc>Function to set selection of coil table.</desc>
+                    <param desc="Selection" multiplicity="1" name="selection" type="string"/>
+                </function>
+                <function name="setDiscreteInputStatusViaUI">
+                    <desc>Function to preset a status to set for a selected discrete input.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="setCoilStatusViaUI">
+                    <desc>Function to preset a status to set for a selected coil.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="setShowLog">
+                    <desc>Function to set if communication log should be shown on UI.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
                 </function>
             </serves>
         </crown>
@@ -345,38 +439,42 @@ NUM will be replaced by the number of instance (e.g. "setHoldingValue1"). +</des
             <trait>released</trait>
             <desc>Crown to provide CSK_FlowConfig relevant features.</desc>
             <serves/>
-            <crown name="SetValue">
-                <desc>Set value of ModbusTCP variable.</desc>
+            <crown name="UpdateValue">
+                <desc>Set value of ModbusTCP register.</desc>
                 <serves>
                     <function name="create">
                         <desc>Internally used CSK_FlowConfig create function.</desc>
                         <param constraint="1-99" desc="Numeric identifier of processing instance." multiplicity="1" name="Instance" type="int"/>
-                        <param desc="Name of variable." multiplicity="1" name="varName" type="string"/>
+                        <param desc="Type of register." multiplicity="1" name="RegisterType" ref="CSK_MultiModbusTCPServer.RegisterType" type="enum"/>
+                        <param desc="Address of register." multiplicity="1" name="Address" type="int"/>
+                        <param desc="Data type of register (only needed for RegisterType INPUT_REGISTER and HOLDING_REGISTER)" multiplicity="?" name="DataType" ref="CSK_MultiModbusTCPServer.DataType" type="enum"/>
                         <return desc="Handle to internally used FlowConfig instance." multiplicity="1" name="handle" type="handle"/>
                     </function>
-                    <function name="setValue">
+                    <function name="updateValue">
                         <include>data-flow</include>
-                        <desc>Set value of ModbusTCP variable.</desc>
+                        <desc>Set value of ModbusTCP register.</desc>
                         <param desc="Handle to internally used FlowConfig instance." multiplicity="1" name="handle" type="handle"/>
-                        <param desc="Source to forward data via ModbusTCP variable.&#10;&#10;Parameter:&#10;1: Data (BINARY)&#10;" multiplicity="1" name="source" type="string"/>
+                        <param desc="Source to forward data via ModbusTCP register.&#10;&#10;Parameter:&#10;1: Data (BOOL if DISCRETE_INPUT or COIL, NUMBER if HOLDING_REGISTER or INPUT_REGISTER )&#10;" multiplicity="1" name="source" type="string"/>
                     </function>
                 </serves>
             </crown>
             <crown name="OnNewData">
                 <trait>released</trait>
-                <desc>Provide updated value of ModbusTCP variable.</desc>
+                <desc>Provide updated value of ModbusTCP register.</desc>
                 <serves>
                     <event name="OnNewData">
                         <include>data-flow</include>
-                        <desc>Provide updated value of ModbusTCP variable.</desc>
+                        <desc>Provide updated value of ModbusTCP register.</desc>
                         <param desc="Handle to internally used FlowConfig instance." multiplicity="1" name="handle" type="handle"/>
-                        <param desc="'CSK_MultiModbusTCPServer.OnNewVariableUpdateData[InstanceNUM]_[VarName]'&#10;&#10;Parameter&#10;1: Updated value (BINARY)" multiplicity="1" name="OnNewData" ref="MultiColorSelection_FC.ResultType" type="string"/>
+                        <param desc="'CSK_MultiModbusTCPServer.OnNewUpdate[InstanceNUM]_[TYPE]_[ADDRESS]'&#10;&#10;Parameter&#10;1: Updated value (NUMBER for 'INPUT/HOLDING_REGISTER', BOOL for 'DISCRETE_INPUT, COIL')" multiplicity="1" name="OnNewData" ref="MultiColorSelection_FC.ResultType" type="string"/>
                     </event>
                     <function name="create">
                         <trait>released</trait>
                         <desc>Internally used CSK_FlowConfig create function.</desc>
                         <param constraint="1-99" desc="Numeric identifier of processing instance." multiplicity="1" name="Instance" type="int"/>
-                        <param desc="Name of variable." multiplicity="1" name="VarName" type="string"/>
+                        <param desc="Type of register." multiplicity="1" name="RegisterType" ref="CSK_MultiModbusTCPServer.RegisterType" type="enum"/>
+                        <param desc="" multiplicity="1" name="Address" type="int"/>
+                        <param desc="Data type of register (only needed for RegisterType INPUT_REGISTER and HOLDING_REGISTER)" multiplicity="?" name="DataType" ref="CSK_MultiModbusTCPServer.DataType" type="enum"/>
                         <return desc="Handle to internally used FlowConfig instance." multiplicity="1" name="handle" type="handle"/>
                     </function>
                     <function name="register">
@@ -390,139 +488,8 @@ NUM will be replaced by the number of instance (e.g. "setHoldingValue1"). +</des
                 </serves>
             </crown>
         </crown>
-        <crown name="Engine">
-            <desc>no description yet</desc>
-            <uses>
-                <event name="OnStarted"/>
-                <function name="getEnumValues"/>
-                <function name="getCurrentAppVersion"/>
-            </uses>
-        </crown>
-        <crown name="Timer">
-            <desc>no description yet</desc>
-            <uses>
-                <event name="OnExpired"/>
-                <function name="create"/>
-                <function name="setPeriodic"/>
-                <function name="start"/>
-                <function name="register"/>
-                <function name="setExpirationTime"/>
-            </uses>
-        </crown>
-        <crown name="CSK_PersistentData">
-            <desc>no description yet</desc>
-            <uses>
-                <event name="OnNewStatusCSKStyle"/>
-                <event name="OnResetAllModules"/>
-                <event name="OnInitialDataLoaded"/>
-                <function name="getParameter"/>
-                <function name="setModuleParameterName"/>
-                <function name="addParameter"/>
-                <function name="saveData"/>
-                <function name="getModuleParameterName"/>
-                <function name="getVersion"/>
-            </uses>
-        </crown>
-        <crown name="Modbus">
-            <desc>no description yet</desc>
-            <uses/>
-            <crown name="Server">
-                <desc>no description yet</desc>
-                <uses>
-                    <event name="OnWriteByClient"/>
-                    <function name="setInterface"/>
-                    <function name="setPort"/>
-                    <function name="writeVariable"/>
-                    <function name="register"/>
-                    <function name="create"/>
-                    <function name="removeVariable"/>
-                    <function name="start"/>
-                    <function name="stop"/>
-                    <function name="addVariable"/>
-                </uses>
-            </crown>
-        </crown>
-        <crown name="CSK_FlowConfig">
-            <desc>no description yet</desc>
-            <uses>
-                <event name="OnNewFlowConfig"/>
-                <event name="OnClearOldFlow"/>
-            </uses>
-        </crown>
-        <crown name="Log">
-            <desc>no description yet</desc>
-            <uses/>
-            <crown name="Handler">
-                <desc>no description yet</desc>
-                <uses>
-                    <function name="create"/>
-                </uses>
-            </crown>
-            <crown name="SharedLogger">
-                <desc>no description yet</desc>
-                <uses>
-                    <function name="create"/>
-                </uses>
-            </crown>
-        </crown>
-        <crown name="Script">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="isServedAsEvent"/>
-                <function name="getStartArgument"/>
-                <function name="deregister"/>
-                <function name="serveFunction"/>
-                <function name="releaseObject"/>
-                <function name="notifyEvent"/>
-                <function name="startScript"/>
-                <function name="register"/>
-                <function name="callFunction"/>
-                <function name="serveEvent"/>
-            </uses>
-        </crown>
-        <crown name="Container">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="get"/>
-                <function name="create"/>
-                <function name="list"/>
-                <function name="remove"/>
-                <function name="add"/>
-            </uses>
-        </crown>
-        <crown name="table">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="remove"/>
-                <function name="insert"/>
-                <function name="sort"/>
-                <function name="concat"/>
-            </uses>
-        </crown>
-        <crown name="string">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="pack"/>
-                <function name="char"/>
-                <function name="find"/>
-                <function name="sub"/>
-                <function name="format"/>
-            </uses>
-        </crown>
-        <crown name="Object">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="getType"/>
-            </uses>
-        </crown>
-        <crown name="DateTime">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="getTime"/>
-            </uses>
-        </crown>
         <meta key="author">SICK AG</meta>
-        <meta key="version">0.1.0</meta>
+        <meta key="version">0.7.2_beta</meta>
         <meta key="priority">low</meta>
         <meta key="copy-protected">false</meta>
         <meta key="read-protected">false</meta>

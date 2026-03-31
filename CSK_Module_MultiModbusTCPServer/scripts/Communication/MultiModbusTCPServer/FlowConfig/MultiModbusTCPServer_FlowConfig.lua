@@ -5,7 +5,7 @@
 -- features of this module via the 'CSK FlowConfig'.
 --*****************************************************************
 
-require('Communication/MultiModbusTCPServer/FlowConfig/MultiModbusTCPServer_SetValue')
+require('Communication/MultiModbusTCPServer/FlowConfig/MultiModbusTCPServer_UpdateValue')
 require('Communication/MultiModbusTCPServer/FlowConfig/MultiModbusTCPServer_OnNewData')
 
 --- Function to react if FlowConfig was updated

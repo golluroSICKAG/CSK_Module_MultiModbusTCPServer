@@ -62,19 +62,33 @@ function multiModbusTCPServer.create(multiModbusTCPServerInstanceNo)
   self.availableInterfaces = Engine.getEnumValues("EthernetInterfaces") -- Available ethernet interfaces on device
   self.interfaceList = self.helperFuncs.createStringListBySimpleTable(self.availableInterfaces) -- List of ethernet interfaces
 
-  self.tempVarInputName = ''
-  self.tempInputByteSize = 2
-  self.tempInputRegisteredEvent = ''
-  self.currentInputSelection = ''
-  self.tempInputValue = 0
-  self.currentInputValues = {} -- Table to track values of INPUT variables
+  self.tempDiscreteInputAddress = 0
+  self.tempDiscreteInputRegisteredEvent = ''
+  self.currentDiscreteInputSelection = ''
+  self.tempDiscreteInputValue = false
+  self.currentDiscreteInputValues = {} -- Table to track values of discrete input values
 
-  self.tempVarHoldingName = ''
-  self.tempHoldingByteSize = 2
+  self.tempCoilAddress = 0
+  self.tempCoilRegisteredEvent = ''
+  self.currentCoilSelection = ''
+  self.tempCoilValue = false
+  self.currentCoilValues = {} -- Table to track values of coil values
+
+  --self.tempVarInputName = ''
+  self.tempInputRegisterAddress = 0
+  self.tempInputRegisterDataType = 'INT16'
+  self.tempInputRegisteredEvent = ''
+  self.currentInputRegisterSelection = ''
+  self.tempInputRegisterValue = 0
+  self.currentInputRegisterValues = {} -- Table to track values of input registers
+
+  --self.tempVarHoldingName = ''
+  self.tempHoldingRegisterAddress = 0
+  self.tempHoldingRegisterDataType = 'INT16'
   self.tempHoldingRegisteredEvent = ''
-  self.currentHoldingSelection = ''
-  self.tempHoldingValue = 0
-  self.currentHoldingValues = {} -- Table to track values of HOLDING variables
+  self.currentHoldingRegisterSelection = ''
+  self.tempHoldingRegisterValue = 0
+  self.currentHoldingRegisterValues = {} -- Table to track values of holding registers
 
   -- Parameters to be saved permanently if wanted
   self.parameters = {}
@@ -94,6 +108,11 @@ function multiModbusTCPServer.create(multiModbusTCPServerInstanceNo)
   self.multiModbusTCPServerProcessingParams:add('connectionStatus', self.parameters.connectionStatus, "BOOL")
   self.multiModbusTCPServerProcessingParams:add('interface', self.parameters.interface, "STRING")
   self.multiModbusTCPServerProcessingParams:add('port', self.parameters.port, "INT")
+
+  self.multiModbusTCPServerProcessingParams:add('showLog', self.parameters.showLog, "BOOL")
+
+  self.multiModbusTCPServerProcessingParams:add('maxConnections', self.parameters.maxConnections, "INT")
+  self.multiModbusTCPServerProcessingParams:add('transmitTimeout', self.parameters.transmitTimeout, "INT")
 
   -- Handle processing
   Script.startScript(self.parameters.processingFile, self.multiModbusTCPServerProcessingParams)

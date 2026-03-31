@@ -36,7 +36,8 @@ end
 local function loadSpecificAPIs()
   -- If you want to check for specific APIs/functions supported on the device the module is running, place relevant APIs here
   Modbus = {}
-  Modbus.Server = require 'API.Modbus.Server'
+  Modbus.Model = require 'API.Modbus.Model'
+  Modbus.TCPServer = require 'API.Modbus.TCPServer'
 end
 
 availableAPIs.default = xpcall(loadAPIs, debug.traceback) -- TRUE if all default APIs were loaded correctly

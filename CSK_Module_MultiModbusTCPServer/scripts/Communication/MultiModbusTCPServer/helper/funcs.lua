@@ -22,48 +22,74 @@ funcs.defaultParameters = require('Communication/MultiModbusTCPServer/MultiModbu
 --**********************Start Function Scope *******************************
 --**************************************************************************
 
---- Function to create a json string out of 'Modbus TCP Variables' table content
----@param content table[] Table with 'Modbus TCP Variables' data entries
+--- Function to create a json string out of 'Modbus TCP registers' table content
+---@param content table[] Table with 'Modbus TCP registers' data entries
 ---@param selectedParam string Selected table entry
 ---@param tableType string Type of table
 ---@return string jsonstring JSON string
-local function createJsonListVariableList(content, selectedParam, tableType, values)
+local function createJsonListRegisters(content, selectedParam, tableType, values)
   local varList = {}
-  if content.names == nil then
-    if tableType == 'INPUT' then
-      varList = {{DTC_ID_Input = '-', DTC_BytePosition_Input = '-', DTC_VarName_Input = '-', DTC_RegisteredEvent_Input = '-', DTC_CurrentValue_Input = '-'},}
-    elseif tableType == 'HOLDING' then
-      varList = {{DTC_ID_Holding = '-', DTC_BytePosition_Holding = '-', DTC_VarName_Holding = '-', DTC_RegisteredEvent_Holding = '-', DTC_CurrentValue_Holding = '-'},}
+  if content.address == nil then
+    if tableType == 'DISCRETE_INPUT' then
+      varList = {{DTC_DiscreteInput_Address = '-', DTC_DiscreteInput_RegisteredEvent = '-', DTC_DiscreteInput_CurrentValue = '-'},}
+    elseif tableType == 'COIL' then
+      varList = {{DTC_Coil_Address = '-', DTC_Coil_RegisteredEvent = '-', DTC_Coil_CurrentValue = '-'},}
+    elseif tableType == 'INPUT_REGISTER' then
+      varList = {{DTC_InputRegister_Address = '-', DTC_InputRegister_DataType = '-', DTC_InputRegister_RegisteredEvent = '-', DTC_InputRegister_CurrentValue = '-'},}
+    elseif tableType == 'HOLDING_REGISTER' then
+      varList = {{DTC_HoldingRegister_Address = '-', DTC_HoldingRegister_DataType = '-', DTC_HoldingRegister_RegisteredEvent = '-', DTC_HoldingRegister_CurrentValue = '-'},}
     end
   else
+    local sortedTable = {}
+    for key, _ in pairs(content.address) do
+      table.insert(sortedTable, string.sub(key, 9))
+    end
+    table.sort(sortedTable)
 
-    local tempBytePosition = 0
-    for i in ipairs(content.names) do
+    for _, i in ipairs(sortedTable) do
       local isSelected = false
       if tostring(i) == selectedParam then
         isSelected = true
       end
-      if tableType == 'INPUT' then
-        if values[i] then
-          table.insert(varList, {DTC_ID_Input = tostring(i), DTC_BytePosition_Input = tostring(tempBytePosition) .. ' - ' .. tostring(tempBytePosition + content.size[i] -1), DTC_VarName_Input = content.names[i], DTC_RegisteredEvent_Input = content.event[i], DTC_CurrentValue_Input = string.unpack('>I2', values[i]), selected = isSelected})
+
+      if tableType == 'DISCRETE_INPUT' then
+        if values['Address_'..tostring(i)] == nil then
+          table.insert(varList, {DTC_DiscreteInput_Address = tostring(i), DTC_DiscreteInput_RegisteredEvent = content.event['Address_'..tostring(i)], DTC_DiscreteInput_CurrentValue = 'nA', selected = isSelected})
         else
-          table.insert(varList, {DTC_ID_Input = tostring(i), DTC_BytePosition_Input = tostring(tempBytePosition) .. ' - ' .. tostring(tempBytePosition + content.size[i] -1), DTC_VarName_Input = content.names[i], DTC_RegisteredEvent_Input = content.event[i], DTC_CurrentValue_Input = 'nA', selected = isSelected})
+          table.insert(varList, {DTC_DiscreteInput_Address = tostring(i), DTC_DiscreteInput_RegisteredEvent = content.event['Address_'..tostring(i)], DTC_DiscreteInput_CurrentValue = tostring(values['Address_'..tostring(i)]), selected = isSelected})
         end
-      elseif tableType == 'HOLDING' then
-        if values[i] then
-          table.insert(varList, {DTC_ID_Holding = tostring(i), DTC_BytePosition_Holding = tostring(tempBytePosition) .. ' - ' .. tostring(tempBytePosition + content.size[i] -1), DTC_VarName_Holding = content.names[i], DTC_RegisteredEvent_Holding = content.event[i], DTC_CurrentValue_Holding = string.unpack('>I2', values[i]), selected = isSelected})
+
+      elseif tableType == 'COIL' then
+        if values['Address_'..tostring(i)] == nil then
+          table.insert(varList, {DTC_Coil_Address = tostring(i), DTC_Coil_RegisteredEvent = content.event['Address_'..tostring(i)], DTC_Coil_CurrentValue = 'nA', selected = isSelected})
         else
-          table.insert(varList, {DTC_ID_Holding = tostring(i), DTC_BytePosition_Holding = tostring(tempBytePosition) .. ' - ' .. tostring(tempBytePosition + content.size[i] -1), DTC_VarName_Holding = content.names[i], DTC_RegisteredEvent_Holding = content.event[i], DTC_CurrentValue_Holding = 'nA', selected = isSelected})
+          table.insert(varList, {DTC_Coil_Address = tostring(i), DTC_Coil_RegisteredEvent = content.event['Address_'..tostring(i)], DTC_Coil_CurrentValue = tostring(values['Address_'..tostring(i)]), selected = isSelected})
+        end
+
+      elseif tableType == 'INPUT_REGISTER' then
+        if not values['Address_'..tostring(i)] then
+          table.insert(varList, {DTC_InputRegister_Address = tostring(i), DTC_InputRegister_DataType = tostring(content.dataType['Address_'..tostring(i)]), DTC_InputRegister_RegisteredEvent = content.event['Address_'..tostring(i)], DTC_InputRegister_CurrentValue = 'nA', selected = isSelected})
+        else
+          table.insert(varList, {DTC_InputRegister_Address = tostring(i), DTC_InputRegister_DataType = tostring(content.dataType['Address_'..tostring(i)]), DTC_InputRegister_RegisteredEvent = content.event['Address_'..tostring(i)], DTC_InputRegister_CurrentValue = values['Address_'..tostring(i)], selected = isSelected})
+        end
+      elseif tableType == 'HOLDING_REGISTER' then
+        if not values['Address_'..tostring(i)] then
+          table.insert(varList, {DTC_HoldingRegister_Address = tostring(i), DTC_HoldingRegister_DataType = tostring(content.dataType['Address_'..tostring(i)]), DTC_HoldingRegister_RegisteredEvent = content.event['Address_'..tostring(i)], DTC_HoldingRegister_CurrentValue = 'nA', selected = isSelected})
+        else
+          table.insert(varList, {DTC_HoldingRegister_Address = tostring(i), DTC_HoldingRegister_DataType = tostring(content.dataType['Address_'..tostring(i)]), DTC_HoldingRegister_RegisteredEvent = content.event['Address_'..tostring(i)], DTC_HoldingRegister_CurrentValue = values['Address_'..tostring(i)], selected = isSelected})
         end
       end
-      tempBytePosition = tempBytePosition + content.size[i]
     end
 
     if #varList == 0 then
-      if tableType == 'INPUT' then
-        varList = {{DTC_ID_Input = '-', DTC_BytePosition_Input = '-', DTC_VarName_Input = '-', DTC_RegisteredEvent_Input = '-', DTC_CurrentValue_Input = '-'},}
-      elseif tableType == 'HOLDING' then
-        varList = {{DTC_ID_Holding = '-', DTC_BytePosition_Holding = '-', DTC_VarName_Holding = '-', DTC_RegisteredEvent_Holding = '-', DTC_CurrentValue_Holding = '-'},}
+      if tableType == 'DISCRETE_INPUT' then
+        varList = {{DTC_DiscreteInput_Address = '-', DTC_DiscreteInput_RegisteredEvent = '-', DTC_DiscreteInput_CurrentValue = '-'},}
+      elseif tableType == 'COIL' then
+        varList = {{DTC_Coil_Address = '-', DTC_Coil_RegisteredEvent = '-', DTC_Coil_CurrentValue = '-'},}
+      elseif tableType == 'INPUT_REGISTER' then
+        varList = {{DTC_InputRegister_Address = '-', DTC_InputRegister_DataType = '-', DTC_InputRegister_RegisteredEvent = '-', DTC_InputRegister_CurrentValue = '-'},}
+      elseif tableType == 'HOLDING_REGISTER' then
+        varList = {{DTC_HoldingRegister_Address = '-', DTC_HoldingRegister_DataType = '-', DTC_HoldingRegister_RegisteredEvent = '-', DTC_HoldingRegister_CurrentValue = '-'},}
       end
     end
   end
@@ -71,7 +97,7 @@ local function createJsonListVariableList(content, selectedParam, tableType, val
   local jsonstring = funcs.json.encode(varList)
   return jsonstring
 end
-funcs.createJsonListVariableList = createJsonListVariableList
+funcs.createJsonListRegisters = createJsonListRegisters
 
 --- Function to create a list with numbers
 ---@param size int Size of the list

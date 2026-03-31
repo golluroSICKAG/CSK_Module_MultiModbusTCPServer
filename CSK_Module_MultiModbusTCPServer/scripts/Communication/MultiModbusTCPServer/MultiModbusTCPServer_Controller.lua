@@ -27,13 +27,10 @@ local helperFuncs = require('Communication/MultiModbusTCPServer/helper/funcs')
 ----------------------------------------------------------------
 local function emptyFunction()
 end
-Script.serveFunction("CSK_MultiModbusTCPServer.setHoldingValueNUM", emptyFunction)
-Script.serveFunction("CSK_MultiModbusTCPServer.setInputValueNUM", emptyFunction)
 
 Script.serveEvent("CSK_MultiModbusTCPServer.OnNewValueToForwardNUM", "MultiModbusTCPServer_OnNewValueToForwardNUM")
 Script.serveEvent("CSK_MultiModbusTCPServer.OnNewValueUpdateNUM", "MultiModbusTCPServer_OnNewValueUpdateNUM")
-Script.serveEvent("CSK_MultiModbusTCPServer.OnNewVariableUpdateNUM", "MultiModbusTCPServer_OnNewVariableValueUpdateNUM")
-Script.serveEvent("CSK_MultiModbusTCPServer.OnNewVariableUpdateNUM_VAR", "MultiModbusTCPServer_OnNewVariableValueUpdateNUM_VAR")
+Script.serveEvent("CSK_MultiModbusTCPServer.OnNewUpdateNUM_TYPE_ADDRESS", "MultiModbusTCPServer_OnNewUpdateNUM_TYPE_ADDRESS")
 ----------------------------------------------------------------
 
 -- Real events
@@ -50,18 +47,30 @@ Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusServerPort', 'MultiModbus
 Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusInterfaceList', 'MultiModbusTCPServer_OnNewStatusInterfaceList')
 Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusSelectedInterface', 'MultiModbusTCPServer_OnNewStatusSelectedInterface')
 
-Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempVarInputName', 'MultiModbusTCPServer_OnNewStatusTempVarInputName')
-Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempVarInputSize', 'MultiModbusTCPServer_OnNewStatusTempVarInputSize')
-Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempVarInputRegisteredEvent', 'MultiModbusTCPServer_OnNewStatusTempVarInputRegisteredEvent')
-Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusInputValueToSet', 'MultiModbusTCPServer_OnNewStatusInputValueToSet')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusShowLog', 'MultiModbusTCPServer_OnNewStatusShowLog')
 
-Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempVarHoldingName', 'MultiModbusTCPServer_OnNewStatusTempVarHoldingName')
-Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempVarHoldingSize', 'MultiModbusTCPServer_OnNewStatusTempVarHoldingSize')
-Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempVarHoldingRegisteredEvent', 'MultiModbusTCPServer_OnNewStatusTempVarHoldingRegisteredEvent')
-Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusHoldingValueToSet', 'MultiModbusTCPServer_OnNewStatusHoldingValueToSet')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempDiscreteInputAddress', 'MultiModbusTCPServer_OnNewStatusTempDiscreteInputAddress')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempDiscreteInputRegisteredEvent', 'MultiModbusTCPServer_OnNewStatusTempDiscreteInputRegisteredEvent')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusDiscreteInputStatusToSet', 'MultiModbusTCPServer_OnNewStatusDiscreteInputStatusToSet')
 
-Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusListOfInputVariables', 'MultiModbusTCPServer_OnNewStatusListOfInputVariables')
-Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusListOfHoldingVariables', 'MultiModbusTCPServer_OnNewStatusListOfHoldingVariables')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempCoilAddress', 'MultiModbusTCPServer_OnNewStatusTempCoilAddress')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempCoilRegisteredEvent', 'MultiModbusTCPServer_OnNewStatusTempCoilRegisteredEvent')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusCoilStatusToSet', 'MultiModbusTCPServer_OnNewStatusCoilStatusToSet')
+
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempInputRegisterAddress', 'MultiModbusTCPServer_OnNewStatusTempInputRegisterAddress')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempInputRegisterDataType', 'MultiModbusTCPServer_OnNewStatusTempInputRegisterDataType')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempInputRegisterEvent', 'MultiModbusTCPServer_OnNewStatusTempInputRegisterEvent')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusInputRegisterValueToSet', 'MultiModbusTCPServer_OnNewStatusInputRegisterValueToSet')
+
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempHoldingRegisterAddress', 'MultiModbusTCPServer_OnNewStatusTempHoldingRegisterAddress')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempHoldingRegisterDataType', 'MultiModbusTCPServer_OnNewStatusTempHoldingRegisterDataType')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusTempHoldingRegisterEvent', 'MultiModbusTCPServer_OnNewStatusTempHoldingRegisterEvent')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusHoldingRegisterValueToSet', 'MultiModbusTCPServer_OnNewStatusHoldingRegisterValueToSet')
+
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusListOfCoils', 'MultiModbusTCPServer_OnNewStatusListOfCoils')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusListOfDiscreteInputs', 'MultiModbusTCPServer_OnNewStatusListOfDiscreteInputs')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusListOfInputRegisters', 'MultiModbusTCPServer_OnNewStatusListOfInputRegisters')
+Script.serveEvent('CSK_MultiModbusTCPServer.OnNewStatusListOfHoldingRegisters', 'MultiModbusTCPServer_OnNewStatusListOfHoldingRegisters')
 
 Script.serveEvent("CSK_MultiModbusTCPServer.OnNewStatusLoadParameterOnReboot", "MultiModbusTCPServer_OnNewStatusLoadParameterOnReboot")
 Script.serveEvent("CSK_MultiModbusTCPServer.OnPersistentDataModuleAvailable", "MultiModbusTCPServer_OnPersistentDataModuleAvailable")
@@ -127,12 +136,29 @@ end
 ---@param value auto[?*] Value to update
 ---@param valueB auto[?*] Optional value
 local function handleOnNewValueUpdate(instance, parameter, value, valueB)
-  if parameter == 'ValueUpdateInput' then
-    multiModbusTCPServer_Instances[instance].currentInputValues = value
-    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfInputVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[instance].parameters.listOfInputVariables, multiModbusTCPServer_Instances[instance].currentInputSelection, 'INPUT', value))
-  elseif parameter == 'ValueUpdateHolding' then
-    multiModbusTCPServer_Instances[instance].currentHoldingValues = value
-    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfHoldingVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[instance].parameters.listOfHoldingVariables, multiModbusTCPServer_Instances[instance].currentHoldingSelection, 'HOLDING', value))
+  if parameter == 'UpdateInputRegister' then
+    for key, val in pairs(value) do
+      multiModbusTCPServer_Instances[instance].currentInputRegisterValues['Address_'..tostring(val)] = valueB[key]
+    end
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfInputRegisters', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[instance].parameters.listOfInputRegisters, multiModbusTCPServer_Instances[instance].currentInputRegisterSelection, 'INPUT_REGISTER', multiModbusTCPServer_Instances[instance].currentInputRegisterValues))
+
+  elseif parameter == 'UpdateHoldingRegister' then
+    for key, val in pairs(value) do
+      multiModbusTCPServer_Instances[instance].currentHoldingRegisterValues['Address_'..tostring(val)] = valueB[key]
+    end
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfHoldingRegisters', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[instance].parameters.listOfHoldingRegisters, multiModbusTCPServer_Instances[instance].currentHoldingRegisterSelection, 'HOLDING_REGISTER', multiModbusTCPServer_Instances[instance].currentHoldingRegisterValues))
+
+  elseif parameter == 'UpdateDiscreteInputs' then
+    for key, val in pairs(value) do
+      multiModbusTCPServer_Instances[instance].currentDiscreteInputValues['Address_'..tostring(val)] = valueB[key]
+    end
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfDiscreteInputs', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[instance].parameters.listOfDiscreteInputs, multiModbusTCPServer_Instances[instance].currentDiscreteInputSelection, 'DISCRETE_INPUT', multiModbusTCPServer_Instances[instance].currentDiscreteInputValues))
+
+  elseif parameter == 'UpdateCoils' then
+    for key, val in pairs(value) do
+      multiModbusTCPServer_Instances[instance].currentCoilValues['Address_'..tostring(val)] = valueB[key]
+    end
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfCoils', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[instance].parameters.listOfCoils, multiModbusTCPServer_Instances[instance].currentCoilSelection, 'COIL', multiModbusTCPServer_Instances[instance].currentCoilValues))
   else
     multiModbusTCPServer_Instances[instance].parameters[parameter] = value
   end
@@ -204,20 +230,33 @@ local function handleOnExpiredTmrMultiModbusTCPServer()
     Script.notifyEvent("MultiModbusTCPServer_OnNewStatusInterfaceList", multiModbusTCPServer_Instances[selectedInstance].interfaceList)
     Script.notifyEvent("MultiModbusTCPServer_OnNewStatusSelectedInterface", multiModbusTCPServer_Instances[selectedInstance].parameters.interface)
 
-    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempVarInputName", multiModbusTCPServer_Instances[selectedInstance].tempVarInputName)
-    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempVarInputSize", multiModbusTCPServer_Instances[selectedInstance].tempInputByteSize)
-    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempVarInputRegisteredEvent", multiModbusTCPServer_Instances[selectedInstance].tempInputRegisteredEvent)
-    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusInputValueToSet", multiModbusTCPServer_Instances[selectedInstance].tempInputValue)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusShowLog", multiModbusTCPServer_Instances[selectedInstance].parameters.showLog)
 
-    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempVarHoldingName", multiModbusTCPServer_Instances[selectedInstance].tempVarHoldingName)
-    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempVarHoldingSize", multiModbusTCPServer_Instances[selectedInstance].tempHoldingByteSize)
-    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempVarHoldingRegisteredEvent", multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisteredEvent)
-    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusHoldingValueToSet", multiModbusTCPServer_Instances[selectedInstance].tempHoldingValue)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempDiscreteInputAddress", multiModbusTCPServer_Instances[selectedInstance].tempDiscreteInputAddress)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempDiscreteInputRegisteredEvent", multiModbusTCPServer_Instances[selectedInstance].tempDiscreteInputRegisteredEvent)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusDiscreteInputStatusToSet", multiModbusTCPServer_Instances[selectedInstance].tempDiscreteInputValue)
 
-    multiModbusTCPServer_Instances[selectedInstance].currentInputSelection = ''
-    multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection = ''
-    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfInputVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables, multiModbusTCPServer_Instances[selectedInstance].currentInputSelection, 'INPUT', multiModbusTCPServer_Instances[selectedInstance].currentInputValues))
-    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfHoldingVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables, multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection, 'HOLDING', multiModbusTCPServer_Instances[selectedInstance].currentHoldingValues))
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempCoilAddress", multiModbusTCPServer_Instances[selectedInstance].tempCoilAddress)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempCoilRegisteredEvent", multiModbusTCPServer_Instances[selectedInstance].tempCoilRegisteredEvent)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusCoilStatusToSet", multiModbusTCPServer_Instances[selectedInstance].tempCoilValue)
+
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfDiscreteInputs', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs, multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection, 'DISCRETE_INPUT', multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputValues))
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfCoils', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils, multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection, 'COIL', multiModbusTCPServer_Instances[selectedInstance].currentCoilValues))
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfInputRegisters', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters, multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection, 'INPUT_REGISTER', multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterValues))
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfHoldingRegisters', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters, multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection, 'HOLDING_REGISTER', multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterValues))
+
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempInputRegisterAddress", multiModbusTCPServer_Instances[selectedInstance].tempInputRegisterAddress)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempInputRegisterDataType", multiModbusTCPServer_Instances[selectedInstance].tempInputRegisterDataType)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempInputRegisterEvent", multiModbusTCPServer_Instances[selectedInstance].tempInputRegisteredEvent)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusInputRegisterValueToSet", multiModbusTCPServer_Instances[selectedInstance].tempInputRegisterValue)
+
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempHoldingRegisterAddress", multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisterAddress)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempHoldingRegisterDataType", multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisterDataType)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempHoldingRegisterEvent", multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisteredEvent)
+    Script.notifyEvent("MultiModbusTCPServer_OnNewStatusHoldingRegisterValueToSet", multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisterValue)
+
+    multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection = ''
+    multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection = ''
 
     Script.notifyEvent("MultiModbusTCPServer_OnNewStatusFlowConfigPriority", multiModbusTCPServer_Instances[selectedInstance].parameters.flowConfigPriority)
     Script.notifyEvent("MultiModbusTCPServer_OnNewStatusLoadParameterOnReboot", multiModbusTCPServer_Instances[selectedInstance].parameterLoadOnReboot)
@@ -275,298 +314,481 @@ local function setStatusOfServer(status)
 end
 Script.serveFunction('CSK_MultiModbusTCPServer.setStatusOfServer', setStatusOfServer)
 
-local function setInputVarTableSelection(selection)
+local function setShowLog(status)
+  _G.logger:fine(nameOfModule .. ": Set showLog status to = " .. tostring(status))
+  multiModbusTCPServer_Instances[selectedInstance].parameters.showLog = status
+  Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'showLog', status)
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setShowLog', setShowLog)
+
+local function setDiscreteInputTableSelection(selection)
   if selection == "" then
-    multiModbusTCPServer_Instances[selectedInstance].currentInputSelection = ''
-    _G.logger:info(nameOfModule .. ": Did not find variable. Is empty")
+    multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection = ''
+    _G.logger:info(nameOfModule .. ": Did not find register. Is empty")
   else
-    local _, pos = string.find(selection, '"DTC_ID_Input":"')
+    local _, pos = string.find(selection, '"DTC_DiscreteInput_Address":"')
     if pos == nil then
-      _G.logger:info(nameOfModule .. ": Did not find variable. Is nil")
-      multiModbusTCPServer_Instances[selectedInstance].currentInputSelection = ''
+      _G.logger:info(nameOfModule .. ": Did not find register. Is nil")
+      multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection = ''
     else
       pos = tonumber(pos)
       local endPos = string.find(selection, '"', pos+1)
       local newSelection = string.sub(selection, pos+1, endPos-1)
-      if newSelection == multiModbusTCPServer_Instances[selectedInstance].currentInputSelection then
-        multiModbusTCPServer_Instances[selectedInstance].currentInputSelection = ''
+      if newSelection == multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection then
+        multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection = ''
       else
         if (newSelection == nil or newSelection == "" ) then
-          _G.logger:info(nameOfModule .. ": Did not find variable. Is empty or nil")
-          multiModbusTCPServer_Instances[selectedInstance].currentInputSelection = ''
+          _G.logger:info(nameOfModule .. ": Did not find register. Is empty or nil")
+          multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection = ''
         else
-          multiModbusTCPServer_Instances[selectedInstance].currentInputSelection = newSelection
-          _G.logger:fine(nameOfModule .. ": Selected ID: " .. tostring(multiModbusTCPServer_Instances[selectedInstance].currentInputSelection))
-          --if ( multiModbusTCPServer_Instances[selectedInstance].currentInputSelection ~= "-" ) then
-            --multiModbusTCPServer_Instances[selectedInstance].tempInputRegisteredEvent = 
-            --Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempVarInputRegisteredEvent", multiModbusTCPServer_Instances[selectedInstance].tempInputRegisteredEvent)
-          --  Script.notifyEvent("MultiTCPIPClient_OnNewEventToForward", eventToForward)
-          --end
+          multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection = newSelection
+          _G.logger:fine(nameOfModule .. ": Selected input register address: " .. tostring(multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection))
         end
       end
     end
   end
-  Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfInputVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables, multiModbusTCPServer_Instances[selectedInstance].currentInputSelection, 'INPUT', multiModbusTCPServer_Instances[selectedInstance].currentInputValues))
+  Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfDiscreteInputs', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs, multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection, 'DISCRETE_INPUT', multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputValues))
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.setInputVarTableSelection', setInputVarTableSelection)
+Script.serveFunction('CSK_MultiModbusTCPServer.setDiscreteInputTableSelection', setDiscreteInputTableSelection)
 
-local function setHoldingVarTableSelection(selection)
+local function setCoilTableSelection(selection)
   if selection == "" then
-    multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection = ''
-    _G.logger:info(nameOfModule .. ": Did not find variable. Is empty")
+    multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection = ''
+    _G.logger:info(nameOfModule .. ": Did not find register. Is empty")
   else
-    local _, pos = string.find(selection, '"DTC_ID_Holding":"')
+    local _, pos = string.find(selection, '"DTC_Coil_Address":"')
     if pos == nil then
-      _G.logger:info(nameOfModule .. ": Did not find variable. Is nil")
-      multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection = ''
+      _G.logger:info(nameOfModule .. ": Did not find register. Is nil")
+      multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection = ''
     else
       pos = tonumber(pos)
       local endPos = string.find(selection, '"', pos+1)
       local newSelection = string.sub(selection, pos+1, endPos-1)
-      if newSelection == multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection then
-        multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection = ''
+      if newSelection == multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection then
+        multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection = ''
       else
         if (newSelection == nil or newSelection == "" ) then
-          _G.logger:info(nameOfModule .. ": Did not find variable. Is empty or nil")
-          multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection = ''
+          _G.logger:info(nameOfModule .. ": Did not find register. Is empty or nil")
+          multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection = ''
         else
-          multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection = newSelection
-          _G.logger:fine(nameOfModule .. ": Selected ID: " .. tostring(multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection))
-          --if ( multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection ~= "-" ) then
-            --multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisteredEvent = 
-            --Script.notifyEvent("MultiModbusTCPServer_OnNewStatusTempVarHoldingRegisteredEvent", multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisteredEvent)
-          --  Script.notifyEvent("MultiTCPIPClient_OnNewEventToForward", eventToForward)
-          --end
+          multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection = newSelection
+          _G.logger:fine(nameOfModule .. ": Selected coil address: " .. tostring(multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection))
         end
       end
     end
   end
-  Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfHoldingVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables, multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection, 'HOLDING', multiModbusTCPServer_Instances[selectedInstance].currentHoldingValues))
+  Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfCoils', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils, multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection, 'COIL', multiModbusTCPServer_Instances[selectedInstance].currentCoilValues))
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.setHoldingVarTableSelection', setHoldingVarTableSelection)
+Script.serveFunction('CSK_MultiModbusTCPServer.setCoilTableSelection', setCoilTableSelection)
 
-local function addVariable(varName, size, varType, eventName)
-  for _, inputValue in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.names) do
-    if inputValue == varName then
-      _G.logger:info(nameOfModule .. ": Variable name already exists.")
-      return
+local function setInputRegisterTableSelection(selection)
+  if selection == "" then
+    multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection = ''
+    _G.logger:info(nameOfModule .. ": Did not find register. Is empty")
+  else
+    local _, pos = string.find(selection, '"DTC_InputRegister_Address":"')
+    if pos == nil then
+      _G.logger:info(nameOfModule .. ": Did not find register. Is nil")
+      multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection = ''
+    else
+      pos = tonumber(pos)
+      local endPos = string.find(selection, '"', pos+1)
+      local newSelection = string.sub(selection, pos+1, endPos-1)
+      if newSelection == multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection then
+        multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection = ''
+      else
+        if (newSelection == nil or newSelection == "" ) then
+          _G.logger:info(nameOfModule .. ": Did not find register. Is empty or nil")
+          multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection = ''
+        else
+          multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection = newSelection
+          _G.logger:fine(nameOfModule .. ": Selected input register address: " .. tostring(multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection))
+        end
+      end
     end
   end
-  for _, holdingValue in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.names) do
-    if holdingValue == varName then
-      _G.logger:info(nameOfModule .. ": Variable name already exists.")
-      return
+  Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfInputRegisters', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters, multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection, 'INPUT_REGISTER', multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterValues))
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setInputRegisterTableSelection', setInputRegisterTableSelection)
+
+local function setHoldingRegisterTableSelection(selection)
+  if selection == "" then
+    multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection = ''
+    _G.logger:info(nameOfModule .. ": Did not find register. Is empty")
+  else
+    local _, pos = string.find(selection, '"DTC_HoldingRegister_Address":"')
+    if pos == nil then
+      _G.logger:info(nameOfModule .. ": Did not find register. Is nil")
+      multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection = ''
+    else
+      pos = tonumber(pos)
+      local endPos = string.find(selection, '"', pos+1)
+      local newSelection = string.sub(selection, pos+1, endPos-1)
+      if newSelection == multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection then
+        multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection = ''
+      else
+        if (newSelection == nil or newSelection == "" ) then
+          _G.logger:info(nameOfModule .. ": Did not find register. Is empty or nil")
+          multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection = ''
+        else
+          multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection = newSelection
+          _G.logger:fine(nameOfModule .. ": Selected holding register address: " .. tostring(multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection))
+        end
+      end
     end
   end
+  Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfHoldingRegisters', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters, multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection, 'HOLDING_REGISTER', multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterValues))
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setHoldingRegisterTableSelection', setHoldingRegisterTableSelection)
 
-  multiModbusTCPServer_Instances[selectedInstance].currentInputSelection = ''
-  multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection = ''
-  if varType == 'INPUT' then
-    table.insert(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.names, varName)
-    table.insert(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.size, size)
-    table.insert(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.event, eventName)
-    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfInputVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables, multiModbusTCPServer_Instances[selectedInstance].currentInputSelection, 'INPUT', multiModbusTCPServer_Instances[selectedInstance].currentInputValues))
-  elseif varType == 'HOLDING' then
-    table.insert(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.names, varName)
-    table.insert(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.size, size)
-    table.insert(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.event, eventName)
-    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfHoldingVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables, multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection, 'HOLDING', multiModbusTCPServer_Instances[selectedInstance].currentHoldingValues))
+local function addRegister(regType, address, eventName, dataType, noEventUpdate)
+  if noEventUpdate == nil then
+    noEventUpdate = false
   end
-  Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'addVariable', varName, size, varType, eventName)
-end
-Script.serveFunction('CSK_MultiModbusTCPServer.addVariable', addVariable)
+  multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection = ''
+  multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection = ''
 
-local function addInputVariableViaUI()
-  addVariable(multiModbusTCPServer_Instances[selectedInstance].tempVarInputName, multiModbusTCPServer_Instances[selectedInstance].tempInputByteSize, 'INPUT', multiModbusTCPServer_Instances[selectedInstance].tempInputRegisteredEvent)
-end
-Script.serveFunction('CSK_MultiModbusTCPServer.addInputVariableViaUI', addInputVariableViaUI)
+  multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection = ''
+  multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection = ''
 
-local function removeInputVariable(varName)
-  local id = 0
-  for key, value in ipairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.names) do
-    if value == varName then
-      id = key
+  if regType == 'COIL' then
+    if multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.address['Address_'..tostring(address)] and noEventUpdate ~= true then
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'updateEvent', regType, address, eventName)
+    else
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.address['Address_'..tostring(address)] = address
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'addRegister', regType, address, eventName, 'BOOL')
+    end
+    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.event['Address_'..tostring(address)] = eventName
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfCoils', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils, multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection, 'COIL', multiModbusTCPServer_Instances[selectedInstance].currentCoilValues))
+
+  elseif regType == 'DISCRETE_INPUT' then
+    if multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.address['Address_'..tostring(address)] and noEventUpdate ~= true then
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'updateEvent', regType, address, eventName)
+    else
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.address['Address_'..tostring(address)] = address
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'addRegister', regType, address, eventName, 'BOOL')
+    end
+    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.event['Address_'..tostring(address)] = eventName
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfDiscreteInputs', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs, multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection, 'DISCRETE_INPUT', multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputValues))
+
+  elseif regType == 'INPUT_REGISTER' then
+    if multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.address['Address_'..tostring(address)] and noEventUpdate ~= true then
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'updateEvent', regType, address, eventName, dataType)
+    else
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.address['Address_'..tostring(address)] = address
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'addRegister', regType, address, eventName, dataType)
+    end
+    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.event['Address_'..tostring(address)] = eventName
+    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.dataType['Address_'..tostring(address)] = dataType
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfInputRegisters', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters, multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection, 'INPUT_REGISTER', multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterValues))
+
+  elseif regType == 'HOLDING_REGISTER' then
+    if multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.address['Address_'..tostring(address)] and noEventUpdate ~= true then
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'updateEvent', regType, address, eventName, dataType)
+    else
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.address['Address_'..tostring(address)] = address
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'addRegister', regType, address, eventName, dataType)
+    end
+    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.event['Address_'..tostring(address)] = eventName
+    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.dataType['Address_'..tostring(address)] = dataType
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfHoldingRegisters', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters, multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection, 'HOLDING_REGISTER', multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterValues))
+
+  end
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.addRegister', addRegister)
+
+local function setDiscreteInputAddress(address)
+  multiModbusTCPServer_Instances[selectedInstance].tempDiscreteInputAddress = address
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setDiscreteInputAddress', setDiscreteInputAddress)
+
+local function setDiscreteInputRegisteredEvent(event)
+  multiModbusTCPServer_Instances[selectedInstance].tempDiscreteInputRegisteredEvent = event
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setDiscreteInputRegisteredEvent', setDiscreteInputRegisteredEvent)
+
+local function setCoilAddress(address)
+  multiModbusTCPServer_Instances[selectedInstance].tempCoilAddress = address
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setCoilAddress', setCoilAddress)
+
+local function setCoilRegisteredEvent(event)
+  multiModbusTCPServer_Instances[selectedInstance].tempCoilRegisteredEvent = event
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setCoilRegisteredEvent', setCoilRegisteredEvent)
+
+local function addDiscreteInputViaUI()
+  addRegister('DISCRETE_INPUT', multiModbusTCPServer_Instances[selectedInstance].tempDiscreteInputAddress, multiModbusTCPServer_Instances[selectedInstance].tempDiscreteInputRegisteredEvent, 'BOOL')
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.addDiscreteInputViaUI', addDiscreteInputViaUI)
+
+local function addCoilViaUI()
+  addRegister('COIL', multiModbusTCPServer_Instances[selectedInstance].tempCoilAddress, multiModbusTCPServer_Instances[selectedInstance].tempCoilRegisteredEvent, 'BOOL')
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.addCoilViaUI', addCoilViaUI)
+
+local function addInputRegisterViaUI()
+  addRegister('INPUT_REGISTER', multiModbusTCPServer_Instances[selectedInstance].tempInputRegisterAddress, multiModbusTCPServer_Instances[selectedInstance].tempInputRegisteredEvent, multiModbusTCPServer_Instances[selectedInstance].tempInputRegisterDataType)
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.addInputRegisterViaUI', addInputRegisterViaUI)
+
+local function addHoldingRegisterViaUI()
+  addRegister('HOLDING_REGISTER', multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisterAddress, multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisteredEvent, multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisterDataType)
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.addHoldingRegisterViaUI', addHoldingRegisterViaUI)
+
+local function removeDiscreteInput(address)
+  local id = ''
+  for _, value in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.address) do
+    if tostring(value) == address then
+      id = value
       break
     end
   end
-  if id ~= 0 then
-    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeVariable', multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.names[id], 'INPUT', id)
+  if id ~= '' then
+    --Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeRegister', multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.address[id], 'DISCRETE_INPUT', id)
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeRegister', 'DISCRETE_INPUT', id)
 
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].currentInputValues, id)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.names, id)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.size, id)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.event, id)
-      multiModbusTCPServer_Instances[selectedInstance].currentInputSelection = ''
-      Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfInputVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables, multiModbusTCPServer_Instances[selectedInstance].currentInputSelection, 'INPUT', multiModbusTCPServer_Instances[selectedInstance].currentInputValues))
+    multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputValues['Address_'..id] = nil
+    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.address['Address_'..id] = nil
+    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.event['Address_'..id] = nil
+
+    multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection = ''
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfDiscreteInputs', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs, multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection, 'DISCRETE_INPUT', multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputValues))
   else
-    _G.logger:info(nameOfModule .. ": Variable " .. tostring(varName) .. "does not exist.")
+    _G.logger:info(nameOfModule .. ": Discrete input address" .. tostring(address) .. " does not exist.")
   end
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.removeInputVariable', removeInputVariable)
+Script.serveFunction('CSK_MultiModbusTCPServer.removeDiscreteInput', removeDiscreteInput)
 
-local function removeInputVariableViaUI()
-  if multiModbusTCPServer_Instances[selectedInstance].currentInputSelection ~= nil and multiModbusTCPServer_Instances[selectedInstance].currentInputSelection ~= '' then
-    local selectedVarID = tonumber(multiModbusTCPServer_Instances[selectedInstance].currentInputSelection)
-    if #multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.names >= selectedVarID then
-      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeVariable', multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.names[selectedVarID], 'INPUT', selectedVarID)
+local function removeDiscreteInputViaUI()
+  if multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection ~= nil and multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection ~= '' then
+    removeDiscreteInput(multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection)
+  else
+    _G.logger:info(nameOfModule .. ": No discrete input selection.")
+  end
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.removeDiscreteInputViaUI', removeDiscreteInputViaUI)
 
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].currentInputValues, selectedVarID)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.names, selectedVarID)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.size, selectedVarID)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.event, selectedVarID)
-      multiModbusTCPServer_Instances[selectedInstance].currentInputSelection = ''
-      Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfInputVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables, multiModbusTCPServer_Instances[selectedInstance].currentInputSelection, 'INPUT', multiModbusTCPServer_Instances[selectedInstance].currentInputValues))
-    else
-      _G.logger:info(nameOfModule .. ": Variable does not exist.")
+local function removeCoil(address)
+  local id = ''
+  for _, value in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.address) do
+    if tostring(value) == address then
+      id = value
+      break
     end
+  end
+  if id ~= '' then
+    --Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeRegister', multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.address[id], 'COIL', id)
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeRegister', 'COIL', id)
+
+      multiModbusTCPServer_Instances[selectedInstance].currentCoilValues['Address_'..id] = nil
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.address['Address_'..id] = nil
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.event['Address_'..id] = nil
+
+      multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection = ''
+      Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfCoils', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils, multiModbusTCPServer_Instances[selectedInstance].listOfCoils, 'COIL', multiModbusTCPServer_Instances[selectedInstance].currentCoilValues))
   else
-    _G.logger:info(nameOfModule .. ": No selection.")
+    _G.logger:info(nameOfModule .. ": Coil address" .. tostring(address) .. " does not exist.")
   end
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.removeInputVariableViaUI', removeInputVariableViaUI)
+Script.serveFunction('CSK_MultiModbusTCPServer.removeCoil', removeCoil)
 
-local function setInputVarName(name)
-  _G.logger:fine(nameOfModule .. ": Set temp name of new input variable to = " .. tostring(name))
-  multiModbusTCPServer_Instances[selectedInstance].tempVarInputName = name
+local function removeCoilViaUI()
+  if multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection ~= nil and multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection ~= '' then
+    removeCoil(multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection)
+  else
+    _G.logger:info(nameOfModule .. ": No coil selection.")
+  end
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.setInputVarName', setInputVarName)
+Script.serveFunction('CSK_MultiModbusTCPServer.removeCoilViaUI', removeCoilViaUI)
 
-local function setInputVarSize(size)
-  _G.logger:fine(nameOfModule .. ": Set size of new input variable to = " .. tostring(size) .. ' Byte')
-  multiModbusTCPServer_Instances[selectedInstance].tempInputByteSize = size
+local function removeInputRegister(address)
+  local id = ''
+  for _, value in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.address) do
+    if tostring(value) == address then
+      id = value
+      break
+    end
+  end
+  if id ~= '' then
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeRegister', 'INPUT_REGISTER', id)
+
+      multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterValues['Address_'..id] = nil
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.address['Address_'..id] = nil
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.dataType['Address_'..id] = nil
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.event['Address_'..id] = nil
+
+      multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection = ''
+      Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfInputRegisters', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters, multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection, 'INPUT_REGISTER', multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterValues))
+  else
+    _G.logger:info(nameOfModule .. ": Input register address" .. tostring(address) .. " does not exist.")
+  end
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.setInputVarSize', setInputVarSize)
+Script.serveFunction('CSK_MultiModbusTCPServer.removeInputRegister', removeInputRegister)
 
-local function setInputVarRegisteredEvent(event)
-  _G.logger:fine(nameOfModule .. ": Set event to register new input variable to = " .. tostring(event))
+local function removeInputRegisterViaUI()
+  if multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection ~= nil and multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection ~= '' then
+    removeInputRegister(multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection)
+  else
+    _G.logger:info(nameOfModule .. ": No input register selection.")
+  end
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.removeInputRegisterViaUI', removeInputRegisterViaUI)
+
+local function setInputRegisterAddress(address)
+  _G.logger:fine(nameOfModule .. ": Set temp address of new input register to = " .. tostring(address))
+  multiModbusTCPServer_Instances[selectedInstance].tempInputRegisterAddress = address
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setInputRegisterAddress', setInputRegisterAddress)
+
+local function setInputRegisterDataType(dataType)
+  _G.logger:fine(nameOfModule .. ": Set dataType of new input register to = " .. tostring(dataType) .. ' Byte')
+  multiModbusTCPServer_Instances[selectedInstance].tempInputRegisterDataType = dataType
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setInputRegisterDataType', setInputRegisterDataType)
+
+local function setInputRegisterEvent(event)
+  _G.logger:fine(nameOfModule .. ": Set event to register new input register to = " .. tostring(event))
   multiModbusTCPServer_Instances[selectedInstance].tempInputRegisteredEvent = event
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.setInputVarRegisteredEvent', setInputVarRegisteredEvent)
+Script.serveFunction('CSK_MultiModbusTCPServer.setInputRegisterEvent', setInputRegisterEvent)
 
-local function addHoldingVariableViaUI()
-  addVariable(multiModbusTCPServer_Instances[selectedInstance].tempVarHoldingName, multiModbusTCPServer_Instances[selectedInstance].tempHoldingByteSize, 'HOLDING', multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisteredEvent)
-end
-Script.serveFunction('CSK_MultiModbusTCPServer.addHoldingVariableViaUI', addHoldingVariableViaUI)
-
-local function removeHoldingVariable(varName)
-  local id = 0
-  for key, value in ipairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.names) do
-    if value == varName then
-      id = key
+local function removeHoldingRegister(address)
+  local id = ''
+  for _, value in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.address) do
+    if tostring(value) == address then
+      id = value
       break
     end
   end
-  if id ~= 0 then
-    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeVariable', multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.names[id], 'HOLDING', id)
+  if id ~= '' then
+    --Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeRegister', multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.address[id], 'HOLDING_REGISTER', id)
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeRegister', 'HOLDING_REGISTER', id)
 
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].currentHoldingValues, id)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.names, id)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.size, id)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.event, id)
-      multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection = ''
-      Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfHoldingVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables, multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection, 'HOLDING', multiModbusTCPServer_Instances[selectedInstance].currentHoldingValues))
+    multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterValues['Address_'..id] = nil
+    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.address['Address_'..id] = nil
+    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.dataType['Address_'..id] = nil
+    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.event['Address_'..id] = nil
+
+    multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection = ''
+    Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfHoldingRegisters', helperFuncs.createJsonListRegisters(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters, multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection, 'HOLDING_REGISTER', multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterValues))
   else
-    _G.logger:info(nameOfModule .. ": Variable does not exist.")
+    _G.logger:info(nameOfModule .. ": Holding register address" .. tostring(address) .. " does not exist.")
   end
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.removeHoldingVariable', removeHoldingVariable)
+Script.serveFunction('CSK_MultiModbusTCPServer.removeHoldingRegister', removeHoldingRegister)
 
-local function removeHoldingVariableViaUI()
-  if multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection ~= nil and multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection ~= '' then
-    local selectedVarID = tonumber(multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection)
-    if #multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.names >= selectedVarID then
-      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeVariable', multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.names[selectedVarID], 'HOLDING', selectedVarID)
-
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].currentHoldingValues, selectedVarID)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.names, selectedVarID)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.size, selectedVarID)
-      table.remove(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.event, selectedVarID)
-      multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection = ''
-      Script.notifyEvent('MultiModbusTCPServer_OnNewStatusListOfHoldingVariables', helperFuncs.createJsonListVariableList(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables, multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection, 'HOLDING', multiModbusTCPServer_Instances[selectedInstance].currentHoldingValues))
-    else
-      _G.logger:info(nameOfModule .. ": Variable does not exist.")
-    end
+local function removeHoldingRegisterViaUI()
+  if multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection ~= nil and multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection ~= '' then
+    removeHoldingRegister(multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection)
   else
-    _G.logger:info(nameOfModule .. ": No selection")
+    _G.logger:info(nameOfModule .. ": No holding register selection")
   end
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.removeHoldingVariableViaUI', removeHoldingVariableViaUI)
+Script.serveFunction('CSK_MultiModbusTCPServer.removeHoldingRegisterViaUI', removeHoldingRegisterViaUI)
 
-local function setHoldingVarName(name)
-  _G.logger:fine(nameOfModule .. ": Set temp name of new holding variable to = " .. tostring(name))
-  multiModbusTCPServer_Instances[selectedInstance].tempVarHoldingName = name
+local function setHoldingRegisterAddress(address)
+  _G.logger:fine(nameOfModule .. ": Set temp address of new holding register to = " .. tostring(address))
+  multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisterAddress = address
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.setHoldingVarName', setHoldingVarName)
+Script.serveFunction('CSK_MultiModbusTCPServer.setHoldingRegisterAddress', setHoldingRegisterAddress)
 
-local function setHoldingVarSize(size)
-  _G.logger:fine(nameOfModule .. ": Set size of new holding variable to = " .. tostring(size) .. ' Byte')
-  multiModbusTCPServer_Instances[selectedInstance].tempHoldingByteSize = size
+local function setHoldingRegisterDataType(dataType)
+  _G.logger:fine(nameOfModule .. ": Set dataType of new holding register to = " .. tostring(dataType))
+  multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisterDataType = dataType
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.setHoldingVarSize', setHoldingVarSize)
+Script.serveFunction('CSK_MultiModbusTCPServer.setHoldingRegisterDataType', setHoldingRegisterDataType)
 
-local function setHoldingVarRegisteredEvent(event)
-  _G.logger:fine(nameOfModule .. ": Set event to register new holding variable to = " .. tostring(event))
+local function setHoldingRegisterEvent(event)
+  _G.logger:fine(nameOfModule .. ": Set event to register new holding register to = " .. tostring(event))
   multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisteredEvent = event
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.setHoldingVarRegisteredEvent', setHoldingVarRegisteredEvent)
+Script.serveFunction('CSK_MultiModbusTCPServer.setHoldingRegisterEvent', setHoldingRegisterEvent)
 
---[[
-local function setValueOfVariable(instance, varName, value)
-  _G.logger:fine(nameOfModule .. ": Set value of variable " .. tostring(varName) .. "of instance " .. tostring(instance) .. " to = " .. tostring(value))
-  Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', instance, 'setValue', varName, value)
-end
-Script.serveFunction('CSK_MultiModbusTCPServer.setValueOfVariable', setValueOfVariable)
-]]
-
-local function setInputValueToSet(value)
-  multiModbusTCPServer_Instances[selectedInstance].tempInputValue = value
-  if multiModbusTCPServer_Instances[selectedInstance].currentInputSelection ~= '' then
-    local varName = multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.names[tonumber(multiModbusTCPServer_Instances[selectedInstance].currentInputSelection)]
-    _G.logger:fine(nameOfModule .. ": Set value of variable " .. tostring(varName) .. "of instance " .. tostring(selectedInstance) .. " to = " .. tostring(multiModbusTCPServer_Instances[selectedInstance].tempInputValue))
-    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'setInputValue', varName, string.pack('>I2', multiModbusTCPServer_Instances[selectedInstance].tempInputValue))
+local function setRegisterValue(instance, regType, address, value)
+  if regType == 'DISCRETE_INPUT' then
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', instance, 'setDiscreteInputValue', address, value)
+  elseif regType == 'COIL' then
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', instance, 'setCoilValue', address, value)
+  elseif regType == 'INPUT_REGISTER' then
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', instance, 'setInputValue', address, value)
+  elseif regType == 'HOLDING_REGISTER' then
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', instance, 'setHoldingValue', address, value)
   end
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.setInputValueToSet', setInputValueToSet)
+Script.serveFunction('CSK_MultiModbusTCPServer.setRegisterValue', setRegisterValue)
 
-local function setHoldingValueToSetViaUI(value)
-  multiModbusTCPServer_Instances[selectedInstance].tempHoldingValue = value
-  if multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection ~= '' then
-    local varName = multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.names[tonumber(multiModbusTCPServer_Instances[selectedInstance].currentHoldingSelection)]
-    _G.logger:fine(nameOfModule .. ": Set value of variable " .. tostring(varName) .. "of instance " .. tostring(selectedInstance) .. " to = " .. tostring(multiModbusTCPServer_Instances[selectedInstance].tempHoldingValue))
-    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'setHoldingValue', varName, string.pack('>I2', multiModbusTCPServer_Instances[selectedInstance].tempHoldingValue))
+local function setCoilStatusViaUI(status)
+  multiModbusTCPServer_Instances[selectedInstance].tempCoilValue = status
+  if multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection ~= '' then
+    _G.logger:fine(nameOfModule .. ": Set status of discrete input at address" .. tostring(multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection) .. " of instance " .. tostring(selectedInstance) .. " to = " .. tostring(multiModbusTCPServer_Instances[selectedInstance].tempCoilValue))
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'setCoilValue', multiModbusTCPServer_Instances[selectedInstance].currentCoilSelection, multiModbusTCPServer_Instances[selectedInstance].tempCoilValue)
   end
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.setHoldingValueToSetViaUI', setHoldingValueToSetViaUI)
+Script.serveFunction('CSK_MultiModbusTCPServer.setCoilStatusViaUI', setCoilStatusViaUI)
 
-local function setRegisteredEventOfVariable(varName, eventName)
-  local inputID = false
-  local holdingID = false
-  for key, inputValue in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.names) do
-    if inputValue == varName then
-      inputID = key
-      break
+local function setDiscreteInputStatusViaUI(status)
+  multiModbusTCPServer_Instances[selectedInstance].tempDiscreteInputValue = status
+  if multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection ~= '' then
+    _G.logger:fine(nameOfModule .. ": Set status of discrete input at address" .. tostring(multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection) .. " of instance " .. tostring(selectedInstance) .. " to = " .. tostring(multiModbusTCPServer_Instances[selectedInstance].tempDiscreteInputValue))
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'setDiscreteInputValue', multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputSelection, multiModbusTCPServer_Instances[selectedInstance].tempDiscreteInputValue)
+  end
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setDiscreteInputStatusViaUI', setDiscreteInputStatusViaUI)
+
+local function setInputRegisterValueViaUI(value)
+  multiModbusTCPServer_Instances[selectedInstance].tempInputRegisterValue = value
+  if multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection ~= '' then
+    _G.logger:fine(nameOfModule .. ": Set value of input register at address" .. tostring(multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection) .. " of instance " .. tostring(selectedInstance) .. " to = " .. tostring(multiModbusTCPServer_Instances[selectedInstance].tempInputRegisterValue))
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'setInputValue', multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterSelection, multiModbusTCPServer_Instances[selectedInstance].tempInputRegisterValue)
+  end
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setInputRegisterValueViaUI', setInputRegisterValueViaUI)
+
+local function setHoldingRegisterValueViaUI(value)
+  multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisterValue = value
+  if multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection ~= '' then
+    _G.logger:fine(nameOfModule .. ": Set value of holding register at address " .. tostring(multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection) .. " of instance " .. tostring(selectedInstance) .. " to = " .. tostring(multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisterValue))
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'setHoldingValue', multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterSelection, multiModbusTCPServer_Instances[selectedInstance].tempHoldingRegisterValue)
+  end
+end
+Script.serveFunction('CSK_MultiModbusTCPServer.setHoldingRegisterValueViaUI', setHoldingRegisterValueViaUI)
+
+local function setRegisteredEventOfRegister(regType, address, eventName, dataType)
+  if regType == 'DISCRETE_INPUT' then
+    if multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.address['Address_'..address] then
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.event['Address_'..inputID] = eventName
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'updateEvent', regType, address, eventName)
+    else
+      addRegister(regType, address, eventName, 'BOOL')
+    end
+  elseif regType == 'COIL' then
+    if multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.address['Address_'..address] then
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.event['Address_'..inputID] = eventName
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'updateEvent', regType, address, eventName)
+    else
+      addRegister(regType, address, eventName, 'BOOL')
+    end
+  elseif regType == 'INPUT_REGISTER' then
+    if multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.address['Address_'..address] then
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.event['Address_'..inputID] = eventName
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.dataType['Address_' .. inputID] = dataType
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'updateEvent', regType, address, eventName, dataType)
+    else
+      addRegister(regType, address, eventName, dataType)
+    end
+  elseif regType == 'HOLDING_REGISTER' then
+    if multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.address['Address_'..address] then
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.event['Address_'..inputID] = eventName
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.dataType['Address_' .. inputID] = dataType
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'updateEvent', regType, address, eventName, dataType)
+    else
+      addRegister(regType, address, eventName, dataType)
     end
   end
-  if not inputID then
-    for _, holdingValue in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.names) do
-      if holdingValue == varName then
-        holdingID = key
-        break
-      end
-    end
-  end
-
-  if inputID then
-    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.event[inputID] = eventName
-    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'updateEvent', varName, 'INPUT', eventName)
-  elseif holdingID then
-    multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.event[holdingID] = eventName
-    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'updateEvent', varName, 'HOLDING', eventName)
-  else
-    _G.logger:info(nameOfModule .. ": Variable not available to set registerd event.")
-  end
 end
-Script.serveFunction('CSK_MultiModbusTCPServer.setRegisteredEventOfVariable', setRegisteredEventOfVariable)
+Script.serveFunction('CSK_MultiModbusTCPServer.setRegisteredEventOfRegister', setRegisteredEventOfRegister)
 
 local function setSelectedInstance(instance)
   if #multiModbusTCPServer_Instances >= instance then
@@ -612,29 +834,27 @@ local function resetInstances()
 end
 Script.serveFunction('CSK_MultiModbusTCPServer.resetInstances', resetInstances)
 
---TODO
-local function setRegisterEvent(event)
-  multiModbusTCPServer_Instances[selectedInstance].parameters.registeredEvent = event
-  Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'registeredEvent', event)
-end
-Script.serveFunction("CSK_MultiModbusTCPServer.setRegisterEvent", setRegisterEvent)
-
 --- Function to share process relevant configuration with processing threads
 local function updateProcessingParameters()
   Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'activeInUI', true)
+  Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'showLog', multiModbusTCPServer_Instances[selectedInstance].parameters.showLog)
 
-  --Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'registeredEvent', multiModbusTCPServer_Instances[selectedInstance].parameters.registeredEvent)
+  Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeAllRegisters')
+  setServerPort(multiModbusTCPServer_Instances[selectedInstance].parameters.port)
+  setServerInterface(multiModbusTCPServer_Instances[selectedInstance].parameters.interface)
 
-  --Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'value', multiModbusTCPServer_Instances[selectedInstance].parameters.value)
-
-  -- optionally for internal objects...
-  --[[
-  -- Send config to instances
-  local params = helperFuncs.convertTable2Container(multiModbusTCPServer_Instances[selectedInstance].parameters.internalObject)
-  Container.add(data, 'internalObject', params, 'OBJECT')
-  Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'FullSetup', data)
-  ]]
-
+  for key, value in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.address) do
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'addRegister', 'COIL', value, multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.event['Address_' .. tostring(value)], 'BOOL')
+  end
+  for key, value in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.address) do
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'addRegister', 'DISCRETE_INPUT', value, multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.event['Address_' .. tostring(value)], 'BOOL')
+  end
+  for key, value in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.address) do
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'addRegister', 'INPUT_REGISTER', value, multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.event['Address_' .. tostring(value)], multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.dataType['Address_' .. tostring(value)])
+  end
+  for key, value in pairs(multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.address) do
+    Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'addRegister', 'HOLDING_REGISTER', value, multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.event['Address_' .. tostring(value)], multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.dataType['Address_' .. tostring(value)])
+  end
 end
 
 local function getStatusModuleActive()
@@ -645,10 +865,25 @@ Script.serveFunction('CSK_MultiModbusTCPServer.getStatusModuleActive', getStatus
 local function clearFlowConfigRelevantConfiguration()
   for i = 1, #multiModbusTCPServer_Instances do
     if multiModbusTCPServer_Instances[i].parameters.flowConfigPriority then
-      --TODO
-      --multiModbusTCPServer_Instances[i].parameters.registeredEvent = ''
-      --Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', i, 'deregisterFromEvent', '')
-      --Script.notifyEvent('MultiModbusTCPServer_OnNewStatusRegisteredEvent', '')
+      multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputValues = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.address = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.event = {}
+
+      multiModbusTCPServer_Instances[selectedInstance].currentCoilValues = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.address = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.event = {}
+
+      multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterValues = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.address = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.dataType = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.event = {}
+
+      multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterValues = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.address = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.dataType = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.event = {}
+
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeAllRegisters')
     end
   end
 end
@@ -697,13 +932,19 @@ local function loadParameters()
   if multiModbusTCPServer_Instances[selectedInstance].persistentModuleAvailable then
     local data = CSK_PersistentData.getParameter(multiModbusTCPServer_Instances[selectedInstance].parametersName)
     if data then
+      stopServer()
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeAllRegisters')
+
       _G.logger:info(nameOfModule .. ": Loaded parameters for multiModbusTCPServerObject " .. tostring(selectedInstance) .. " from CSK_PersistentData module.")
       multiModbusTCPServer_Instances[selectedInstance].parameters = helperFuncs.convertContainer2Table(data)
 
       multiModbusTCPServer_Instances[selectedInstance].parameters = helperFuncs.checkParameters(multiModbusTCPServer_Instances[selectedInstance].parameters, helperFuncs.defaultParameters.getParameters())
 
       -- If something needs to be configured/activated with new loaded data
-      --updateProcessingParameters()
+      updateProcessingParameters()
+      if multiModbusTCPServer_Instances[selectedInstance].parameters.connectionStatus then
+        startServer()
+      end
 
       tmrMultiModbusTCPServer:start()
       return true
@@ -787,17 +1028,26 @@ Script.register("CSK_PersistentData.OnInitialDataLoaded", handleOnInitialDataLoa
 local function resetModule()
   if _G.availableAPIs.default and _G.availableAPIs.specific then
     for i = 1, #multiModbusTCPServer_Instances do
-      multiModbusTCPServer_Instances[selectedInstance].currentInputValues = {}
-      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.names = {}
-      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.size = {}
-      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputVariables.event = {}
 
-      multiModbusTCPServer_Instances[selectedInstance].currentHoldingValues = {}
-      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.names = {}
-      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.size = {}
-      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingVariables.event = {}
+      multiModbusTCPServer_Instances[selectedInstance].currentDiscreteInputValues = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.address = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfDiscreteInputs.event = {}
 
-      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeAllVariables')
+      multiModbusTCPServer_Instances[selectedInstance].currentCoilValues = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.address = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfCoils.event = {}
+
+      multiModbusTCPServer_Instances[selectedInstance].currentInputRegisterValues = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.address = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.dataType = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfInputRegisters.event = {}
+
+      multiModbusTCPServer_Instances[selectedInstance].currentHoldingRegisterValues = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.address = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.dataType = {}
+      multiModbusTCPServer_Instances[selectedInstance].parameters.listOfHoldingRegisters.event = {}
+
+      Script.notifyEvent('MultiModbusTCPServer_OnNewProcessingParameter', selectedInstance, 'removeAllRegisters')
       setStatusOfServer(false)
     end
     pageCalled()
